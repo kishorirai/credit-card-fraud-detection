@@ -2,6 +2,8 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
@@ -85,7 +87,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---- TABS ----
-tab1, tab2 = st.tabs(["📝 Manual Input", "📁 CSV Upload"])
+tab1, tab2, tab3 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization"])
 
 # ---------- TAB 1 ---------- 
 with tab1:
@@ -136,6 +138,57 @@ with tab2:
 
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
+
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
+
+# ---------- TAB 3: Feature Visualization ---------- 
+with tab3:
+    st.markdown("### 📊 Visualize Transaction Features")
+
+    uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
+
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+
+            # Plot distributions of Amount, Time, and V1-V28 features
+            st.markdown("#### 📈 Distribution of Features")
+
+            # Amount distribution
+            st.subheader("💰 Distribution of Amount")
+            fig, ax = plt.subplots()
+            ax.hist(df["Amount"], bins=30, color='skyblue', edgecolor='black')
+            ax.set_title("Distribution of Transaction Amount")
+            ax.set_xlabel("Amount")
+            ax.set_ylabel("Frequency")
+            st.pyplot(fig)
+
+            # Time distribution
+            st.subheader("🕒 Distribution of Time")
+            fig, ax = plt.subplots()
+            ax.hist(df["Time"], bins=30, color='lightgreen', edgecolor='black')
+            ax.set_title("Distribution of Time")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Frequency")
+            st.pyplot(fig)
+
+            # Feature V1 to V28 plot (just a few features for illustration)
+            st.subheader("🔢 Distribution of Feature V1")
+            fig, ax = plt.subplots()
+            ax.hist(df["V1"], bins=30, color='lightcoral', edgecolor='black')
+            ax.set_title("Distribution of Feature V1")
+            ax.set_xlabel("V1")
+            ax.set_ylabel("Frequency")
+            st.pyplot(fig)
+
+            # You can add more features (like V2, V3, V4, etc.) in a similar way as above
+            st.markdown("#### 📊 Correlation Heatmap")
+            corr = df.corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
+            ax.set_title("Correlation Heatmap of Features")
+            st.pyplot(fig)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
