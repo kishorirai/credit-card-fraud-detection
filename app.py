@@ -94,14 +94,19 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", 
 
 
 # ---------- TAB 1: Manual Input ----------
-# ---------- TAB 1: Manual Input ----------
+
+   
+    # ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
+        st.markdown("#### ⏱️ Enter Time")
+        time = st.number_input("Time", value=0.0)
+
+        st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
         col1, col2 = st.columns(2)
 
         with col1:
-            time = st.number_input("Time", value=0.0)
             v1 = st.number_input("V1", value=0.0)
             v2 = st.number_input("V2", value=0.0)
             v3 = st.number_input("V3", value=0.0)
@@ -115,9 +120,9 @@ with tab1:
             v11 = st.number_input("V11", value=0.0)
             v12 = st.number_input("V12", value=0.0)
             v13 = st.number_input("V13", value=0.0)
+            v14 = st.number_input("V14", value=0.0)
 
         with col2:
-            v14 = st.number_input("V14", value=0.0)
             v15 = st.number_input("V15", value=0.0)
             v16 = st.number_input("V16", value=0.0)
             v17 = st.number_input("V17", value=0.0)
@@ -132,7 +137,9 @@ with tab1:
             v26 = st.number_input("V26", value=0.0)
             v27 = st.number_input("V27", value=0.0)
             v28 = st.number_input("V28", value=0.0)
-            amount = st.number_input("Amount", value=0.0)
+
+        st.markdown("#### 💰 Enter Transaction Amount")
+        amount = st.number_input("Amount", value=0.0)
 
         submitted = st.form_submit_button("🔎 Predict")
 
