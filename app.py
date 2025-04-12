@@ -92,8 +92,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 
 """# Handle Class Imbalance using SMOTE"""
 
-# Install imbalanced-learn library (only once)
-!pip install -U imbalanced-learn
+
 
 # Import SMOTE
 from imblearn.over_sampling import SMOTE
