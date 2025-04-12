@@ -18,8 +18,10 @@ model = joblib.load("credit_card_fraud_model.pkl")
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
-st.session_state["theme"] = theme
+with st.sidebar.expander("🌗 Theme Settings", expanded=False):
+    theme = st.radio("Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
+    st.session_state["theme"] = theme
+
 
 # ---- CUSTOM STYLING ----
 if theme == "light":
