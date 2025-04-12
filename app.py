@@ -14,16 +14,23 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 # LOAD MODEL
 model = joblib.load("credit_card_fraud_model.pkl")
 
-# ---- THEME TOGGLE ----
+
 # ---- THEME TOGGLE BUTTON (TOP-RIGHT) ----
+
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-# Toggle Button UI
+# Set theme before rendering button
+theme = st.session_state["theme"]
+button_label = "🌙 Dark Mode" if theme == "light" else "☀️ Light Mode"
+
+# Display toggle button in top-right
 col1, col2 = st.columns([0.85, 0.15])
 with col2:
-    if st.button("🌗 Toggle Theme"):
-        st.session_state["theme"] = "dark" if st.session_state["theme"] == "light" else "light"
+    if st.button(button_label):
+        # Toggle theme and rerun
+        st.session_state["theme"] = "dark" if theme == "light" else "light"
+        st.rerun()  # Apply immediately
 
 # Set Theme Colors
 theme = st.session_state["theme"]
