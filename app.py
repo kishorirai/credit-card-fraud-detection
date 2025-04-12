@@ -87,7 +87,7 @@ st.markdown(f"""
 # ---- TABS ----
 tab1, tab2 = st.tabs(["📝 Manual Input", "📁 CSV Upload"])
 
-# ---------- TAB 1 ----------
+# ---------- TAB 1 ---------- 
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
@@ -103,8 +103,11 @@ with tab1:
     if submitted:
         input_array = np.array([features])
         prediction = model.predict(input_array)[0]
+        prediction_prob = model.predict_proba(input_array)[0][1]  # Get the probability of fraud
         result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
-        st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4></div>", unsafe_allow_html=True)
+        confidence = f"{prediction_prob * 100:.2f}%"  # Confidence level of prediction
+        st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4>", unsafe_allow_html=True)
+        st.markdown(f"<p>Confidence Level: {confidence}</p></div>", unsafe_allow_html=True)
 
 # ---------- TAB 2 ----------
 with tab2:
@@ -123,11 +126,13 @@ with tab2:
             st.dataframe(df.head())
 
             predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]  # Get the probability of fraud for all predictions
             df["Prediction"] = predictions
+            df["Confidence"] = prediction_probs * 100  # Add confidence as a percentage
             df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
             st.success("🎯 Predictions done!")
-            st.dataframe(df[["Prediction", "Result"]])
+            st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
