@@ -6,20 +6,20 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 
-# ------------------ PAGE CONFIG ------------------
+# PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 
-# ------------------ LOAD MODEL ------------------
+# LOAD MODEL
 model = joblib.load("credit_card_fraud_model.pkl")
 
-# ------------------ THEME TOGGLE ------------------
+# ---- THEME TOGGLE ----
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
 theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
 st.session_state["theme"] = theme
 
-# ------------------ CUSTOM STYLING ------------------
+# ---- CUSTOM STYLING ----
 if theme == "light":
     bg_color = "#f6f9fc"
     card_color = "white"
@@ -33,7 +33,7 @@ else:
 
 st.markdown(f"""
 <style>
-    html, body, [class*="css"]  {{
+    html, body, [class*="css"] {{
         font-family: 'Poppins', sans-serif;
         background-color: {bg_color};
         color: {text_color};
@@ -75,17 +75,17 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------ HEADER ------------------
+# ---- HEADER ----
 st.markdown(f"""
 <div class='title'>
     <h2>💳 Credit Card Fraud Detection</h2>
 </div>
 """, unsafe_allow_html=True)
 
-# ------------------ TABS ------------------
+# ---- TABS ----
 tab1, tab2, tab3, tab4 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection"])
 
-# ------------------ TAB 1: MANUAL INPUT ------------------
+# ---------- TAB 1 ---------- 
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
@@ -95,7 +95,6 @@ with tab1:
         amount = st.number_input("💰 Amount", value=0.0)
         features = [time] + v_features + [amount]
         st.markdown("</div>", unsafe_allow_html=True)
-
         submitted = st.form_submit_button("🔎 Predict")
 
     if submitted:
@@ -104,10 +103,9 @@ with tab1:
         prediction_prob = model.predict_proba(input_array)[0][1]
         result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
         confidence = f"{prediction_prob * 100:.2f}%"
-        st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4>", unsafe_allow_html=True)
-        st.markdown(f"<p>Confidence Level: {confidence}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4><p>Confidence Level: {confidence}</p></div>", unsafe_allow_html=True)
 
-# ------------------ TAB 2: CSV UPLOAD ------------------
+# ---------- TAB 2 ---------- 
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
@@ -115,7 +113,6 @@ with tab2:
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-
             if "Class" in df.columns:
                 df = df.drop(columns=["Class"])
 
@@ -140,7 +137,7 @@ with tab2:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ------------------ TAB 3: FEATURE VISUALIZATION ------------------
+# ---------- TAB 3 ---------- 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -148,44 +145,34 @@ with tab3:
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-
-            st.markdown("#### 📈 Distribution of Features")
-
             st.subheader("💰 Distribution of Amount")
             fig, ax = plt.subplots()
             ax.hist(df["Amount"], bins=30, color='skyblue', edgecolor='black')
             ax.set_title("Distribution of Transaction Amount")
-            ax.set_xlabel("Amount")
-            ax.set_ylabel("Frequency")
             st.pyplot(fig)
 
             st.subheader("🕒 Distribution of Time")
             fig, ax = plt.subplots()
             ax.hist(df["Time"], bins=30, color='lightgreen', edgecolor='black')
             ax.set_title("Distribution of Time")
-            ax.set_xlabel("Time")
-            ax.set_ylabel("Frequency")
             st.pyplot(fig)
 
             st.subheader("🔢 Distribution of Feature V1")
             fig, ax = plt.subplots()
             ax.hist(df["V1"], bins=30, color='lightcoral', edgecolor='black')
             ax.set_title("Distribution of Feature V1")
-            ax.set_xlabel("V1")
-            ax.set_ylabel("Frequency")
             st.pyplot(fig)
 
             st.markdown("#### 📊 Correlation Heatmap")
             corr = df.corr()
             fig, ax = plt.subplots(figsize=(10, 8))
             sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-            ax.set_title("Correlation Heatmap of Features")
             st.pyplot(fig)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ------------------ TAB 4: ANOMALY DETECTION ------------------
+# ---------- TAB 4 ---------- 
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
@@ -193,22 +180,19 @@ with tab4:
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-
             predictions = model.predict(df)
             prediction_probs = model.predict_proba(df)[:, 1]
             df["Prediction"] = predictions
             df["Confidence"] = prediction_probs * 100
             df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
-
             df_sorted = df.sort_values(by="Confidence", ascending=False)
 
             st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
             st.dataframe(df_sorted.head())
-
             st.success("🎯 Anomaly Detection complete!")
-
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ------------------ FOOTER ------------------
+# ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
+
