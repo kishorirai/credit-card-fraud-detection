@@ -12,13 +12,10 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 model = joblib.load("credit_card_fraud_model.pkl")
 
 # ---- THEME TOGGLE ----
-
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-def toggle_theme():
-    st.session_state["theme"] = "dark" if st.session_state["theme"] == "light" else "light"
-
+# Sidebar theme toggle
 with st.sidebar:
     st.markdown("### 🌓 Theme Settings")
     toggle = st.radio("Select Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
@@ -26,6 +23,8 @@ with st.sidebar:
         st.session_state["theme"] = toggle
         st.experimental_rerun()
 
+# Set theme variable after sidebar
+theme = st.session_state["theme"]
 
 # ---- CUSTOM STYLING ----
 if theme == "light":
@@ -120,7 +119,7 @@ with tab1:
         st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4>", unsafe_allow_html=True)
         st.markdown(f"<p>Confidence Level: {confidence}</p></div>", unsafe_allow_html=True)
 
-# ---------- TAB 2 ----------
+# ---------- TAB 2 ---------- 
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
 
@@ -231,5 +230,3 @@ with tab4:
 
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
-
-
