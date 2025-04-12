@@ -87,7 +87,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---- TABS ----
-tab1, tab2, tab3 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization"])
+tab1, tab2, tab3, tab4 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection"])
 
 # ---------- TAB 1 ---------- 
 with tab1:
@@ -193,10 +193,32 @@ with tab3:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ---------- FOOTER ----------
-st.markdown("<hr>", unsafe_allow_html=True)
-st.markdown(f"""
-<div class='footer'>
-    Developed by: <strong>Kishori Kumari</strong> | College: <strong>MITS, Gwalior</strong>
-</div>
-""", unsafe_allow_html=True)
+# ---------- TAB 4: Anomaly Detection ---------- 
+with tab4:
+    st.markdown("### 🔍 Anomaly Detection Visualization")
+
+    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
+
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+
+            predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]  # Get the probability of fraud for all predictions
+            df["Prediction"] = predictions
+            df["Confidence"] = prediction_probs * 100  # Add confidence as a percentage
+            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+
+            # Sort the transactions based on the confidence level (highest probability of fraud)
+            df_sorted = df.sort_values(by="Confidence", ascending=False)
+
+            # Display the top 5 most anomalous transactions
+            st.markdown("#### 📊 Top 5 Most Anomalous Transactions (Highest Fraud Probability)")
+            st.dataframe(df_sorted.head())
+
+            st.success("🎯 Anomaly Detection complete!")
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
+
+# ---- FOOTER ----
+st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
