@@ -146,9 +146,6 @@ print(classification_report(y_test, y_pred_rf))
 
 print("\nAccuracy Score (Random Forest):", accuracy_score(y_test, y_pred_rf))
 
-# Install Streamlit
-!pip install streamlit
-
 import joblib
 
 # Save the model
