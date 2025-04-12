@@ -92,75 +92,82 @@ st.markdown(f"""
 # ---- TABS ----
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
-# ---------- TAB 1: Manual Input ---------- 
+
+# ---------- TAB 1: Manual Input ----------
 # ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
         st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-        # Creating columns for the input fields to display in grid layout
-        col1, col2 = st.columns(2)
+        # Create a grid layout with proper spacing between columns
+        col1, col2, col3 = st.columns([2, 2, 1])
 
         with col1:
+            st.subheader("Transaction Time & Amount")
             time = st.number_input("🕒 Time", value=0.0, help="The time of the transaction in seconds")
+            amount = st.number_input("💰 Amount", value=0.0, help="The monetary value of the transaction")
+
+        with col2:
+            st.subheader("Transaction Features")
             v1 = st.number_input("🔢 V1", value=0.0, help="Variance of transaction amount over a 3-month period")
             v2 = st.number_input("🔢 V2", value=0.0, help="A feature related to the transaction amount distribution")
             v3 = st.number_input("🔢 V3", value=0.0, help="Another feature related to the transaction data")
             v4 = st.number_input("🔢 V4", value=0.0, help="Variance related to the previous features")
             v5 = st.number_input("🔢 V5", value=0.0, help="A transformation feature used for modeling")
-        
-        with col2:
+
+        with col3:
+            st.subheader("Prediction Model Features")
             v6 = st.number_input("🔢 V6", value=0.0, help="A feature derived from prior transaction amounts")
             v7 = st.number_input("🔢 V7", value=0.0, help="Another feature related to the transaction history")
             v8 = st.number_input("🔢 V8", value=0.0, help="Transformation of transaction amounts")
             v9 = st.number_input("🔢 V9", value=0.0, help="Variance used for fraud detection")
+
+        # Create another row for more features
+        col4, col5, col6 = st.columns([2, 2, 1])
+
+        with col4:
             v10 = st.number_input("🔢 V10", value=0.0, help="A feature used to determine the type of transaction")
-
-        # Continuing to the next group of features
-        col3, col4 = st.columns(2)
-
-        with col3:
             v11 = st.number_input("🔢 V11", value=0.0, help="Another transformation feature")
             v12 = st.number_input("🔢 V12", value=0.0, help="Feature indicating the level of transaction abnormality")
             v13 = st.number_input("🔢 V13", value=0.0, help="Anomaly related to transaction behavior")
+
+        with col5:
             v14 = st.number_input("🔢 V14", value=0.0, help="A statistical feature related to transaction type")
             v15 = st.number_input("🔢 V15", value=0.0, help="A feature for modeling transaction confidence")
-        
-        with col4:
             v16 = st.number_input("🔢 V16", value=0.0, help="Feature representing the variance across multiple features")
             v17 = st.number_input("🔢 V17", value=0.0, help="A feature indicating the abnormality of the transaction")
+
+        with col6:
             v18 = st.number_input("🔢 V18", value=0.0, help="Feature indicating transaction similarity")
             v19 = st.number_input("🔢 V19", value=0.0, help="A transformation for detecting fraudulent behavior")
             v20 = st.number_input("🔢 V20", value=0.0, help="A model-related feature used in fraud detection")
-
-        # Continue with the last group of features
-        col5, col6 = st.columns(2)
-
-        with col5:
             v21 = st.number_input("🔢 V21", value=0.0, help="Feature based on prior data analysis")
+
+        # Another row for remaining features
+        col7, col8 = st.columns([2, 2])
+
+        with col7:
             v22 = st.number_input("🔢 V22", value=0.0, help="Transaction-specific feature derived from earlier behavior")
             v23 = st.number_input("🔢 V23", value=0.0, help="Feature indicating transaction type")
             v24 = st.number_input("🔢 V24", value=0.0, help="Feature related to abnormal behavior detection")
             v25 = st.number_input("🔢 V25", value=0.0, help="Variance feature used in detecting fraud")
-        
-        with col6:
+
+        with col8:
             v26 = st.number_input("🔢 V26", value=0.0, help="Feature indicating the likelihood of fraud")
             v27 = st.number_input("🔢 V27", value=0.0, help="Another feature used for anomaly detection")
             v28 = st.number_input("🔢 V28", value=0.0, help="Final feature used in the prediction model")
-            amount = st.number_input("💰 Amount", value=0.0, help="The monetary value of the transaction")
 
-        # Combining all inputs into a list
+        # Submit button
+        submitted = st.form_submit_button("🔎 Predict")
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    if submitted:
+        # Combine features into a list for prediction
         features = [time] + [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
                              v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
                              v21, v22, v23, v24, v25, v26, v27, v28, amount]
 
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        # Submit button
-        submitted = st.form_submit_button("🔎 Predict")
-
-    if submitted:
         # Perform prediction
         input_array = np.array([features])
         prediction = model.predict(input_array)[0]
@@ -173,6 +180,9 @@ with tab1:
         st.markdown(f"<p>Confidence Level: {confidence}</p>", unsafe_allow_html=True)
         st.markdown(f"<p><strong>Fraud Risk Score: {fraud_risk_score}</strong></p></div>", unsafe_allow_html=True)
 
+
+
+      
 # ---------- TAB 2: CSV Upload ---------- 
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
