@@ -12,11 +12,20 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 model = joblib.load("credit_card_fraud_model.pkl")
 
 # ---- THEME TOGGLE ----
+
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
-st.session_state["theme"] = theme
+def toggle_theme():
+    st.session_state["theme"] = "dark" if st.session_state["theme"] == "light" else "light"
+
+with st.sidebar:
+    st.markdown("### 🌓 Theme Settings")
+    toggle = st.radio("Select Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
+    if toggle != st.session_state["theme"]:
+        st.session_state["theme"] = toggle
+        st.experimental_rerun()
+
 
 # ---- CUSTOM STYLING ----
 if theme == "light":
