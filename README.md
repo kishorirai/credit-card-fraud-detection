@@ -39,7 +39,7 @@ This project aims to build a **Credit Card Fraud Detection** system using machin
 ## **Deployment**
 
 The app is hosted on **Streamlit Cloud**, which makes it accessible online. You can access the deployed app at the following URL:
-[**Your Streamlit App URL**](https://share.streamlit.io/your_username/credit-card-fraud-detection/main/app.py)
+https://credit-card-fraud-detection-p9onhhkshnncs4xnykspa6.streamlit.app/
 
 ## **Dataset**
 
