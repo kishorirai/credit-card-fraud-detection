@@ -92,8 +92,10 @@ with tab1:
     with st.form("manual_form"):
         st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-        # Time Dropdown (Predefined Range)
-        time = st.selectbox("🕒 Time", options=[i for i in range(0, 172793, 10000)])
+        # Time Dropdown with Explanation
+        st.markdown("#### 🕒 Time (Elapsed Time in Seconds)")
+        time = st.selectbox("Choose a time value", options=[i for i in range(0, 172793, 10000)])
+        st.caption("The 'Time' feature represents the elapsed time in seconds from the first transaction.")
 
         # V1 to V28 Manual Inputs
         v_features = [st.text_input(f"🔢 V{i} (e.g., 0.0)", value="0.0") for i in range(1, 29)]
