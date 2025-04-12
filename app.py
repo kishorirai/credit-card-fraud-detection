@@ -1,9 +1,6 @@
 import streamlit as st
 import numpy as np
-import pandas as pd
 import joblib
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
@@ -87,17 +84,26 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---- TABS ----
-tab1, tab2, tab3, tab4 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection"])
+tab1, tab2 = st.tabs(["📝 Manual Input", "📁 CSV Upload"])
 
-# ---------- TAB 1 ---------- 
+# ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
         st.markdown("<div class='card'>", unsafe_allow_html=True)
-        time = st.number_input("🕒 Time", value=0.0)
-        v_features = [st.number_input(f"🔢 V{i}", value=0.0) for i in range(1, 29)]
-        amount = st.number_input("💰 Amount", value=0.0)
+
+        # Time Slider
+        time = st.slider("🕒 Time", min_value=0, max_value=172792, value=0, step=1)
+
+        # V1 to V28 sliders
+        v_features = [st.slider(f"🔢 V{i}", min_value=-20.0, max_value=20.0, value=0.0, step=0.1) for i in range(1, 29)]
+
+        # Amount Slider
+        amount = st.slider("💰 Amount", min_value=0.0, max_value=25691.16, value=0.0, step=0.01)
+
+        # Collecting all features
         features = [time] + v_features + [amount]
+
         st.markdown("</div>", unsafe_allow_html=True)
 
         submitted = st.form_submit_button("🔎 Predict")
@@ -111,7 +117,7 @@ with tab1:
         st.markdown(f"<div class='card'><h4>🧾 Result: {result}</h4>", unsafe_allow_html=True)
         st.markdown(f"<p>Confidence Level: {confidence}</p></div>", unsafe_allow_html=True)
 
-# ---------- TAB 2 ----------
+# ---------- TAB 2: CSV Upload ---------- 
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
 
@@ -139,84 +145,6 @@ with tab2:
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
 
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-
-# ---------- TAB 3: Feature Visualization ---------- 
-with tab3:
-    st.markdown("### 📊 Visualize Transaction Features")
-
-    uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
-
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-
-            # Plot distributions of Amount, Time, and V1-V28 features
-            st.markdown("#### 📈 Distribution of Features")
-
-            # Amount distribution
-            st.subheader("💰 Distribution of Amount")
-            fig, ax = plt.subplots()
-            ax.hist(df["Amount"], bins=30, color='skyblue', edgecolor='black')
-            ax.set_title("Distribution of Transaction Amount")
-            ax.set_xlabel("Amount")
-            ax.set_ylabel("Frequency")
-            st.pyplot(fig)
-
-            # Time distribution
-            st.subheader("🕒 Distribution of Time")
-            fig, ax = plt.subplots()
-            ax.hist(df["Time"], bins=30, color='lightgreen', edgecolor='black')
-            ax.set_title("Distribution of Time")
-            ax.set_xlabel("Time")
-            ax.set_ylabel("Frequency")
-            st.pyplot(fig)
-
-            # Feature V1 to V28 plot (just a few features for illustration)
-            st.subheader("🔢 Distribution of Feature V1")
-            fig, ax = plt.subplots()
-            ax.hist(df["V1"], bins=30, color='lightcoral', edgecolor='black')
-            ax.set_title("Distribution of Feature V1")
-            ax.set_xlabel("V1")
-            ax.set_ylabel("Frequency")
-            st.pyplot(fig)
-
-            # You can add more features (like V2, V3, V4, etc.) in a similar way as above
-            st.markdown("#### 📊 Correlation Heatmap")
-            corr = df.corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-            ax.set_title("Correlation Heatmap of Features")
-            st.pyplot(fig)
-
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-
-# ---------- TAB 4: Anomaly Detection ---------- 
-with tab4:
-    st.markdown("### 🔍 Anomaly Detection Visualization")
-
-    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
-
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-
-            predictions = model.predict(df)
-            prediction_probs = model.predict_proba(df)[:, 1]  # Get the probability of fraud for all predictions
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100  # Add confidence as a percentage
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
-
-            # Sort the transactions based on the confidence level (highest probability of fraud)
-            df_sorted = df.sort_values(by="Confidence", ascending=False)
-
-            # Display the top 5 most anomalous transactions
-            st.markdown("#### 📊 Top 5 Most Anomalous Transactions (Highest Fraud Probability)")
-            st.dataframe(df_sorted.head())
-
-            st.success("🎯 Anomaly Detection complete!")
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
