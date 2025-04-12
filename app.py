@@ -31,17 +31,24 @@ uploaded_file = st.file_uploader("Upload a CSV with columns: Time, V1–V28, Amo
 if uploaded_file is not None:
     try:
         df = pd.read_csv(uploaded_file)
-        st.write("🔍 Preview of Uploaded Data:")
-        st.dataframe(df.head())
+        
+        # Check if the required columns are present
+        required_columns = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+        if all(col in df.columns for col in required_columns):
+            st.write("🔍 Preview of Uploaded Data:")
+            st.dataframe(df.head())
 
-        predictions = model.predict(df)
-        df["Prediction"] = predictions
-        df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+            predictions = model.predict(df)
+            df["Prediction"] = predictions
+            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-        st.success("Predictions completed!")
-        st.dataframe(df[["Prediction", "Result"]])
+            st.success("Predictions completed!")
+            st.dataframe(df[["Prediction", "Result"]])
 
-        csv = df.to_csv(index=False).encode("utf-8")
-        st.download_button("📥 Download Results", csv, "predictions.csv", "text/csv")
+            csv = df.to_csv(index=False).encode("utf-8")
+            st.download_button("📥 Download Results", csv, "predictions.csv", "text/csv")
+        else:
+            st.error(f"Error: Missing required columns. Expected columns: {', '.join(required_columns)}")
     except Exception as e:
         st.error(f"Error: {e}")
+
