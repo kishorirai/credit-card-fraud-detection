@@ -92,17 +92,17 @@ with tab1:
     with st.form("manual_form"):
         st.markdown("<div class='card'>", unsafe_allow_html=True)
 
-        # Time Slider
-        time = st.slider("🕒 Time", min_value=0, max_value=172792, value=0, step=1)
+        # Time Dropdown (Predefined Range)
+        time = st.selectbox("🕒 Time", options=[i for i in range(0, 172793, 10000)])
 
-        # V1 to V28 sliders
-        v_features = [st.slider(f"🔢 V{i}", min_value=-20.0, max_value=20.0, value=0.0, step=0.1) for i in range(1, 29)]
+        # V1 to V28 Manual Inputs
+        v_features = [st.text_input(f"🔢 V{i} (e.g., 0.0)", value="0.0") for i in range(1, 29)]
 
-        # Amount Slider
-        amount = st.slider("💰 Amount", min_value=0.0, max_value=25691.16, value=0.0, step=0.01)
+        # Amount Input
+        amount = st.number_input("💰 Amount", min_value=0.0, max_value=25691.16, value=0.0, step=0.01)
 
         # Collecting all features
-        features = [time] + v_features + [amount]
+        features = [time] + [float(v) for v in v_features] + [amount]
 
         st.markdown("</div>", unsafe_allow_html=True)
 
