@@ -61,7 +61,7 @@ st.markdown("""
 st.markdown("""
 <div class='title'>
     <h2>💳 Credit Card Fraud Detection</h2>
-    <p><b>Kishori Kumari</b> | Madhav Institute of Technology and Science (MITS), Gwalior</p>
+    <p>Minor Project · Madhav Institute of Technology and Science (MITS), Gwalior</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -121,7 +121,6 @@ with tab2:
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("""
 <div class='footer'>
-    © 2025 Kishori Kumari | MITS Gwalior · Streamlit App for Minor Project 💼
+    © 2025 · Credit Card Fraud Detection Web App · MITS Gwalior
 </div>
 """, unsafe_allow_html=True)
-
