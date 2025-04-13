@@ -14,7 +14,7 @@ from datetime import datetime
 
 
 # Set page config to have the sidebar closed by default
-st.set_page_config(page_title="Your App", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="💳 Credit Card Fraud Detection", initial_sidebar_state="collapsed")
 
 # PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
