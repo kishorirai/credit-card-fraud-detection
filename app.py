@@ -338,7 +338,21 @@ with tab5:
         - **Objective**: Detect fraudulent transactions based on past data
         - **Preprocessing**: Normalization and PCA used for visualization
         """)
-        st.image("https://upload.wikimedia.org/wikipedia/commons/a/a3/Random_forest_diagram_complete.png", caption="Random Forest Classifier")
+        # Example model names and accuracies
+model_names = ['Random Forest', 'Logistic Regression', 'SVM']
+accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
+# Create the bar plot
+sns.set(style="whitegrid")
+fig, ax = plt.subplots(figsize=(8, 5))
+sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax)
+
+# Set labels and title
+ax.set_xlabel('Model')
+ax.set_ylabel('Accuracy (%)')
+ax.set_title('Model Performance Comparison')
+
+# Display the plot in Streamlit
+st.pyplot(fig)
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
