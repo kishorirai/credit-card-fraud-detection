@@ -328,7 +328,6 @@ with tab4:
 
 
 # ---------- TAB 5: Model Details ---------- 
-
 # ---------- TAB 5: Model Details ---------- 
 
 import streamlit as st
@@ -336,6 +335,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
 
+# Model Overview
 st.markdown("### ℹ️ Model Details")
 st.markdown("""
 - **Model Type**: Random Forest Classifier  
@@ -345,50 +345,46 @@ st.markdown("""
 - **Preprocessing**: Normalization and PCA used  
 """)
 
-# Two columns for visualization
-col1, col2 = st.columns(2)
+# --- Model Performance Chart ---
+st.markdown("#### 📊 Model Performance Comparison")
 
-# ------ Column 1: Model Performance ------
-with col1:
-    st.markdown("#### 📊 Model Performance")
-    model_names = ['Random Forest', 'Logistic Regression', 'SVM']
-    accuracies = [99.8, 95.4, 98.5]
+model_names = ['Random Forest', 'Logistic Regression', 'SVM']
+accuracies = [99.8, 95.4, 98.5]
 
-    sns.set(style="whitegrid")
-    fig1, ax1 = plt.subplots(figsize=(4.5, 2))
-    sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax1)
+sns.set(style="whitegrid")
+fig1, ax1 = plt.subplots(figsize=(4.5, 2))
+sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax1)
 
-    ax1.set_xlabel('Model', fontsize=9)
-    ax1.set_ylabel('Accuracy (%)', fontsize=9)
-    ax1.set_title('Accuracy Comparison', fontsize=10)
-    ax1.tick_params(axis='x', labelsize=8, rotation=10)
-    ax1.tick_params(axis='y', labelsize=8)
+ax1.set_xlabel('Model', fontsize=9)
+ax1.set_ylabel('Accuracy (%)', fontsize=9)
+ax1.set_title('Accuracy Comparison', fontsize=10)
+ax1.tick_params(axis='x', labelsize=8, rotation=10)
+ax1.tick_params(axis='y', labelsize=8)
 
-    st.pyplot(fig1)
+st.pyplot(fig1)
 
-# ------ Column 2: Confusion Matrix ------
-with col2:
-    st.markdown("#### 🔍 Confusion Matrix")
+# --- Confusion Matrix ---
+st.markdown("#### 🔍 Confusion Matrix (Example)")
 
-    y_true = [0, 0, 1, 1, 0, 1, 0, 0, 1, 1]
-    y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]
+y_true = [0, 0, 1, 1, 0, 1, 0, 0, 1, 1]
+y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]
 
-    cm = confusion_matrix(y_true, y_pred)
+cm = confusion_matrix(y_true, y_pred)
 
-    fig2, ax2 = plt.subplots(figsize=(3.5, 2.5))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['Non-Fraud', 'Fraud'],
-                yticklabels=['Non-Fraud', 'Fraud'], ax=ax2)
+fig2, ax2 = plt.subplots(figsize=(3.5, 2.5))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=['Non-Fraud', 'Fraud'],
+            yticklabels=['Non-Fraud', 'Fraud'], ax=ax2)
 
-    ax2.set_xlabel("Predicted", fontsize=9)
-    ax2.set_ylabel("Actual", fontsize=9)
-    ax2.set_title("Confusion Matrix", fontsize=10)
-    ax2.tick_params(axis='x', labelsize=8)
-    ax2.tick_params(axis='y', labelsize=8)
+ax2.set_xlabel("Predicted Label", fontsize=9)
+ax2.set_ylabel("True Label", fontsize=9)
+ax2.set_title("Confusion Matrix", fontsize=10)
+ax2.tick_params(axis='x', labelsize=8)
+ax2.tick_params(axis='y', labelsize=8)
 
-    st.pyplot(fig2)
+st.pyplot(fig2)
 
-# Confusion matrix explanation (below both columns)
+# --- Explanation for Users ---
 st.markdown("""
 **Legend:**  
 - **TP**: Correctly predicted fraud  
@@ -396,6 +392,7 @@ st.markdown("""
 - **FP**: Non-fraud predicted as fraud  
 - **FN**: Fraud predicted as non-fraud  
 """)
+
 
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
