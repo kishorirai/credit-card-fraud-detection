@@ -7,8 +7,7 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
-import os
-import altair as alt
+
 
 
 # PAGE CONFIG
@@ -246,16 +245,15 @@ with tab3:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-
 # ---------- TAB 4: Anomaly Detection ---------- 
-
 
 # Create a temporary directory if not exists
 TEMP_DIR = ".temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 LAST_FILE_PATH = os.path.join(TEMP_DIR, "last_uploaded_anomaly.csv")
 
-# ---------- TAB 4: Anomaly Detection ---------- 
+# ---------- TAB 4: Anomaly Detection ----------------------
+
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
 
@@ -301,20 +299,19 @@ with tab4:
             st.dataframe(df_sorted.head())
 
             # 📈 Bar Chart Visualization (Top 5 by Confidence)
-top_anomalies = df_sorted.head(5).copy()
-top_anomalies = top_anomalies.reset_index()
+            top_anomalies = df_sorted.head(5).copy()
+            top_anomalies = top_anomalies.reset_index()
 
-chart = alt.Chart(top_anomalies).mark_bar().encode(
-    x=alt.X('Confidence:Q', title='Fraud Confidence (%)'),
-    y=alt.Y('index:O', title='Transaction Index', sort='-x'),
-    color=alt.Color('Result:N', title='Prediction Result'),
-    tooltip=['Result', 'Confidence']
-).properties(
-    title="Top 5 Anomalous Transactions (by Confidence)"
-)
+            chart = alt.Chart(top_anomalies).mark_bar().encode(
+                x=alt.X('Confidence:Q', title='Fraud Confidence (%)'),
+                y=alt.Y('index:O', title='Transaction Index', sort='-x'),
+                color=alt.Color('Result:N', title='Prediction Result'),
+                tooltip=['Result', 'Confidence']
+            ).properties(
+                title="Top 5 Anomalous Transactions (by Confidence)"
+            )
 
-st.altair_chart(chart, use_container_width=True)
-
+            st.altair_chart(chart, use_container_width=True)
 
             # 📥 Download Results
             csv = df_results.to_csv(index=False)
