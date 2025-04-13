@@ -339,7 +339,7 @@ accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
 # Create the bar plot
 sns.set(style="whitegrid")
-fig, ax = plt.subplots(figsize=(8, 5))
+fig, ax = plt.subplots(figsize=(5, 3))
 sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax)
 
 # Set labels and title
