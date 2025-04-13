@@ -99,10 +99,9 @@ st.markdown(f"""
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
 
-# ---------- TAB 1: Manual Input ----------
+# --------------------- TAB 1: Manual Input ----------------------
 
-   
-    # ---------- TAB 1: Manual Input ----------
+
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
     with st.form("manual_form"):
