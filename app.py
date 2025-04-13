@@ -182,7 +182,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Define the model loading code (this should be your trained model)
 # model = load_your_model()
 
-with st.container():  # Main content area, not sidebar
+with tab2:
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
 
