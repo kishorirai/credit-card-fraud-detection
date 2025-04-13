@@ -332,58 +332,58 @@ with tab4:
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics import confusion_matrix
 
-# Example model names and accuracies
+# Bar Plot: Model Performance Comparison
+st.markdown("### 📊 Model Performance Comparison")
 model_names = ['Random Forest', 'Logistic Regression', 'SVM']
 accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
-# Create the bar plot
 sns.set(style="whitegrid")
 fig, ax = plt.subplots(figsize=(4, 2))
 sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax)
 
-# Set labels and title
 ax.set_xlabel('Model')
 ax.set_ylabel('Accuracy (%)')
 ax.set_title('Model Performance Comparison')
 
-# Display the plot in Streamlit
 st.pyplot(fig)
 
 # Model Details (Without expandable format)
 st.markdown("### ℹ️ Model Details")
 st.markdown("""
-- **Model Type**: Random Forest Classifier (or your preferred model)
-- **Dataset**: Credit Card Fraud Detection dataset from Kaggle
-- **Accuracy**: 99.8% (Depending on the model parameters and preprocessing)
-- **Objective**: Detect fraudulent transactions based on past data
-- **Preprocessing**: Normalization and PCA used for visualization
+- **Model Type**: Random Forest Classifier  
+- **Dataset**: Credit Card Fraud Detection dataset (Kaggle)  
+- **Accuracy**: 99.8% (Based on preprocessing and tuning)  
+- **Objective**: Detect fraudulent transactions based on historical data  
+- **Preprocessing**: Normalization and PCA (for dimensionality reduction)  
 """)
 
- # Visualize Confusion Matrix (Static Example)
-    st.markdown("### 📊 Confusion Matrix (Example)")
-# Example values (replace with your actual ones if needed)
-    y_true = [0, 0, 1, 1, 0, 1, 0, 0, 1, 1]  # True labels
-    y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]  # Predicted labels
+# Confusion Matrix Section
+st.markdown("### 🔍 Confusion Matrix (Example)")
 
-    cm = confusion_matrix(y_true, y_pred)
+# Example confusion matrix data
+y_true = [0, 0, 1, 1, 0, 1, 0, 0, 1, 1]  # Ground truth
+y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]  # Model predictions
 
-    fig, ax = plt.subplots(figsize=(4, 3))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['Non-Fraud', 'Fraud'],
-                yticklabels=['Non-Fraud', 'Fraud'], ax=ax)
-    ax.set_xlabel("Predicted Label")
-    ax.set_ylabel("True Label")
-    ax.set_title("Confusion Matrix")
-    st.pyplot(fig)
+cm = confusion_matrix(y_true, y_pred)
 
-    # Optional note to explain
-    st.markdown("""
-    - **TP**: Correctly predicted fraud transactions  
-    - **TN**: Correctly predicted non-fraud transactions  
-    - **FP**: Non-fraud predicted as fraud  
-    - **FN**: Fraud predicted as non-fraud  
-    """)
+fig, ax = plt.subplots(figsize=(4, 3))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=['Non-Fraud', 'Fraud'],
+            yticklabels=['Non-Fraud', 'Fraud'], ax=ax)
+ax.set_xlabel("Predicted Label")
+ax.set_ylabel("True Label")
+ax.set_title("Confusion Matrix")
+st.pyplot(fig)
+
+# Confusion Matrix Explanation
+st.markdown("""
+- **TP**: Correctly predicted fraud  
+- **TN**: Correctly predicted non-fraud  
+- **FP**: Non-fraud predicted as fraud  
+- **FN**: Fraud predicted as non-fraud  
+""")
 
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
