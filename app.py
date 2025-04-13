@@ -114,6 +114,24 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ---- WELCOME SECTION ----
+st.markdown(f"""
+<div class='card' style='margin-bottom: 30px; text-align: center;'>
+    <h3>👋 Welcome to the Credit Card Fraud Detection App</h3>
+    <p>This intelligent system helps detect fraudulent transactions using a pre-trained machine learning model.</p>
+    <p>Use the tabs below to:</p>
+    <ul style='text-align: left; display: inline-block;'>
+        <li>📝 Manually input transaction features</li>
+        <li>📁 Upload and analyze bulk CSV data</li>
+        <li>📊 Visualize features and trends</li>
+        <li>🔍 Explore anomaly detection methods</li>
+        <li>ℹ️ Learn more about the model</li>
+    </ul>
+    <p>Switch themes using the toggle button above. Happy Exploring!</p>
+</div>
+""", unsafe_allow_html=True)
+
+
 # ---- TABS ----
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
