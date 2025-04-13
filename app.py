@@ -89,6 +89,8 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+#-------------
+
 # Sidebar Navigation for Visualization/Details
 st.sidebar.markdown("### 📂 Visual Analysis Tools")
 visual_tab = st.sidebar.radio(
@@ -247,6 +249,8 @@ if visual_tab == "ℹ️ Model Details":
     st.markdown(f"#### Model Accuracy (cross-validation): {np.mean(cv_scores):.2f}")
     st.markdown(f"#### Model Created By: **Your Name**")
     st.markdown(f"#### Date: **{pd.Timestamp.now().strftime('%Y-%m-%d')}**")
+
+
 
 # ---- FOOTER ----
 st.markdown("""
