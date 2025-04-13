@@ -165,19 +165,6 @@ with tab1:
         st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
 
 
-     # ---------- TAB 2: CSV Upload --------------
-
-import os
-import pandas as pd
-import streamlit as st
-import numpy as np
-from sklearn.model_selection import cross_val_score
-
-# Directory where uploaded files will be stored permanently
-UPLOAD_DIR = "uploaded_files"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-
 #---------------------- Tab 2: CSV Upload---------------------
 
 
