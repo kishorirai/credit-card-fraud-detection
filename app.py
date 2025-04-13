@@ -13,6 +13,8 @@ from datetime import datetime
 
 
 
+# Set page config to have the sidebar closed by default
+st.set_page_config(page_title="Your App", initial_sidebar_state="collapsed")
 
 # PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
@@ -21,10 +23,6 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 model = joblib.load("credit_card_fraud_model.pkl")
 
 # -------- THEME TOGGLE ------------
-
-# Set page config to have the sidebar closed by default
-st.set_page_config(page_title="Your App", initial_sidebar_state="collapsed")
-
 
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
