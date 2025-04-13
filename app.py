@@ -122,20 +122,32 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", 
 
 # ---------- TAB 1: Manual Input ----------
 
+# ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
+
+    # Sample inputs for users to refer to
+    st.markdown("#### Sample Input Values")
+    st.markdown("""
+    - **Time**: 123.0
+    - **V1**: 0.1, **V2**: 0.2, **V3**: -0.1, **V4**: 0.3
+    - **Amount**: 20.0
+    """)
+
     with st.form("manual_form"):
         st.markdown("#### ⏱️ Enter Time")
-        time = st.number_input("Time", value=0.0)
+        time = st.number_input("Time", value=123.0)
 
         st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
+
+        # Two columns for input fields
         col1, col2 = st.columns(2)
 
         with col1:
-            v1 = st.number_input("V1", value=0.0)
-            v2 = st.number_input("V2", value=0.0)
-            v3 = st.number_input("V3", value=0.0)
-            v4 = st.number_input("V4", value=0.0)
+            v1 = st.number_input("V1", value=0.1)
+            v2 = st.number_input("V2", value=0.2)
+            v3 = st.number_input("V3", value=-0.1)
+            v4 = st.number_input("V4", value=0.3)
             v5 = st.number_input("V5", value=0.0)
             v6 = st.number_input("V6", value=0.0)
             v7 = st.number_input("V7", value=0.0)
@@ -164,18 +176,22 @@ with tab1:
             v28 = st.number_input("V28", value=0.0)
 
         st.markdown("#### 💰 Enter Transaction Amount")
-        amount = st.number_input("Amount", value=0.0)
+        amount = st.number_input("Amount", value=20.0)
 
         submitted = st.form_submit_button("🔎 Predict")
 
     if submitted:
+        # Collecting all features into an array
         features = [time] + [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
                              v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
                              v21, v22, v23, v24, v25, v26, v27, v28, amount]
 
+        # Convert the features into an array for prediction
         input_array = np.array([features])
         prediction = model.predict(input_array)[0]
         prediction_prob = model.predict_proba(input_array)[0][1]
+        
+        # Result display
         result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
         confidence = f"{prediction_prob * 100:.2f}%"
         fraud_risk_score = int(prediction_prob * 100)
@@ -183,6 +199,7 @@ with tab1:
         st.markdown(f"### 🧾 Result: {result}")
         st.markdown(f"**Confidence Level:** {confidence}")
         st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
+
 
 # ---------- TAB 2: CSV Upload ---------- 
 with tab2:
