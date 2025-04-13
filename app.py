@@ -328,17 +328,12 @@ with tab4:
 
 
 # ---------- TAB 5: Model Details ---------- 
-with tab5:
-    st.markdown("### ℹ️ Model Details")
-    with st.expander("🔍 Expand for more information"):
-        st.markdown("""
-        - **Model Type**: Random Forest Classifier (or your preferred model)
-        - **Dataset**: Credit Card Fraud Detection dataset from Kaggle
-        - **Accuracy**: 99.8% (Depending on the model parameters and preprocessing)
-        - **Objective**: Detect fraudulent transactions based on past data
-        - **Preprocessing**: Normalization and PCA used for visualization
-        """)
-        # Example model names and accuracies
+
+import streamlit as st
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Example model names and accuracies
 model_names = ['Random Forest', 'Logistic Regression', 'SVM']
 accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
@@ -354,5 +349,17 @@ ax.set_title('Model Performance Comparison')
 
 # Display the plot in Streamlit
 st.pyplot(fig)
+
+# Model Details (Without expandable format)
+st.markdown("### ℹ️ Model Details")
+st.markdown("""
+- **Model Type**: Random Forest Classifier (or your preferred model)
+- **Dataset**: Credit Card Fraud Detection dataset from Kaggle
+- **Accuracy**: 99.8% (Depending on the model parameters and preprocessing)
+- **Objective**: Detect fraudulent transactions based on past data
+- **Preprocessing**: Normalization and PCA used for visualization
+""")
+
+
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
