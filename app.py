@@ -252,25 +252,28 @@ with tab4:
 
     if uploaded_file is not None:
         try:
-            df = pd.read_csv(uploaded_file)
+            df_raw = pd.read_csv(uploaded_file)
 
-            # ✅ Check for required features
+            # ✅ Filter only required features
             required_features = model.feature_names_in_
-            missing_features = set(required_features) - set(df.columns)
+            missing_features = set(required_features) - set(df_raw.columns)
             if missing_features:
                 st.error(f"🚫 Missing features in CSV: {', '.join(missing_features)}")
                 st.stop()
+
+            df = df_raw[required_features]  # Keep only needed columns
 
             # 🔍 Make Predictions
             predictions = model.predict(df)
             prediction_probs = model.predict_proba(df)[:, 1]
 
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+            df_results = df_raw.copy()
+            df_results["Prediction"] = predictions
+            df_results["Confidence"] = prediction_probs * 100
+            df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
             # 📊 Top Anomalies Table
-            df_sorted = df.sort_values(by="Confidence", ascending=False)
+            df_sorted = df_results.sort_values(by="Confidence", ascending=False)
             st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
             st.dataframe(df_sorted.head())
 
@@ -286,7 +289,7 @@ with tab4:
             st.altair_chart(chart, use_container_width=True)
 
             # 📥 Download Results
-            csv = df.to_csv(index=False)
+            csv = df_results.to_csv(index=False)
             st.download_button(
                 label="📥 Download Full Result CSV",
                 data=csv,
@@ -295,8 +298,8 @@ with tab4:
             )
 
             # ✅ Detailed Feedback
-            num_fraud = df["Prediction"].sum()
-            st.success(f"🎯 Anomaly Detection complete! {num_fraud} potential fraud(s) detected out of {len(df)} transactions.")
+            num_fraud = df_results["Prediction"].sum()
+            st.success(f"🎯 Anomaly Detection complete! {num_fraud} potential fraud(s) detected out of {len(df_results)} transactions.")
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
