@@ -165,9 +165,8 @@ with tab1:
         st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
 
 
+     # ---------- TAB 2: CSV Upload --------------
 
-      
-# ---------- TAB 2: CSV Upload ---------- 
 import os
 import pandas as pd
 import streamlit as st
@@ -235,7 +234,7 @@ with tab2:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 
-# ---------- TAB 3: Feature Visualization ---------- 
+# --------------------- TAB 3: Feature Visualization ---------------------
 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
@@ -281,8 +280,9 @@ with tab3:
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
+            
 
-# ---------- TAB 4: Anomaly Detection ---------- 
+# ----------------- TAB 4: Anomaly Detection ----------------- 
 
 import os
 
@@ -291,7 +291,7 @@ TEMP_DIR = ".temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
 LAST_FILE_PATH = os.path.join(TEMP_DIR, "last_uploaded_anomaly.csv")
 
-# ---------- TAB 4: Anomaly Detection ---------- 
+
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
 
@@ -364,8 +364,8 @@ with tab4:
             st.error(f"❌ Error: {e}")
 
 
-# ---------- TAB 5: Model Details ---------- 
-# ---------- TAB 5: Model Details ---------- 
+# ------------------ TAB 5: Model Details ---------------------- 
+ 
 
 
 with tab5:
