@@ -7,6 +7,7 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
+import os
 
 # PAGE CONFIG
 st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
@@ -245,9 +246,26 @@ with tab3:
 
 
 # ---------- TAB 4: Anomaly Detection ---------- 
+
+
+# Create a temporary directory if not exists
+TEMP_DIR = ".temp"
+os.makedirs(TEMP_DIR, exist_ok=True)
+LAST_FILE_PATH = os.path.join(TEMP_DIR, "last_uploaded_anomaly.csv")
+
 # ---------- TAB 4: Anomaly Detection ---------- 
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
+
+    # Option to Load Last File
+    if os.path.exists(LAST_FILE_PATH):
+        if st.button("📂 Show Last Uploaded File"):
+            last_df = pd.read_csv(LAST_FILE_PATH)
+            st.markdown("#### 🗂 Last Anomaly Detection Result")
+            st.dataframe(last_df)
+            st.stop()  # Skip file upload if user wants to just view the last one
+
+    # Upload New CSV
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
     if uploaded_file is not None:
@@ -271,6 +289,9 @@ with tab4:
             df_results["Prediction"] = predictions
             df_results["Confidence"] = prediction_probs * 100
             df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+
+            # Save to temp file
+            df_results.to_csv(LAST_FILE_PATH, index=False)
 
             # 📊 Top Anomalies Table
             df_sorted = df_results.sort_values(by="Confidence", ascending=False)
@@ -303,6 +324,7 @@ with tab4:
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
+
 
 # ---------- TAB 5: Model Details ---------- 
 with tab5:
