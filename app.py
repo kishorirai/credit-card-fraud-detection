@@ -197,21 +197,36 @@ with tab2:
             st.error(f"❌ Error: {e}")
 
 # ---------- TAB 3: Feature Visualization ---------- 
+# ---------- TAB 3: Feature Visualization ---------- 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
-    uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
+    uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
 
-    if uploaded_file is not None:
+    if uploaded_viz is not None:
         try:
-            df = pd.read_csv(uploaded_file)
+            df_viz = pd.read_csv(uploaded_viz)
 
-            # PCA visualization
+            required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+            missing_cols = [col for col in required_cols if col not in df_viz.columns]
+            if missing_cols:
+                st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+                st.stop()
+
+            st.success("✅ File loaded successfully!")
+
             st.subheader("📉 2D PCA of the Transactions")
             pca = PCA(n_components=2)
-            pca_result = pca.fit_transform(df.drop(columns=["Class"], errors='ignore'))
+            pca_result = pca.fit_transform(df_viz[required_cols])
 
             fig, ax = plt.subplots()
-            ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df["Class"], cmap="coolwarm")
+            if "Class" in df_viz.columns:
+                scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
+                legend = ax.legend(*scatter.legend_elements(), title="Class")
+                ax.add_artist(legend)
+            else:
+                ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
+                ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
+
             ax.set_title("PCA - 2D Projection")
             ax.set_xlabel("Principal Component 1")
             ax.set_ylabel("Principal Component 2")
@@ -219,14 +234,15 @@ with tab3:
 
             # Feature correlation heatmap
             st.subheader("📊 Correlation Heatmap")
-            corr = df.corr()
-            fig, ax = plt.subplots(figsize=(10, 8))
-            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
-            ax.set_title("Correlation Heatmap of Features")
-            st.pyplot(fig)
+            fig2, ax2 = plt.subplots(figsize=(10, 8))
+            corr = df_viz.corr()
+            sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
+            ax2.set_title("Correlation Heatmap of Features")
+            st.pyplot(fig2)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
+
 
 # ---------- TAB 4: Anomaly Detection ---------- 
 with tab4:
