@@ -21,18 +21,13 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 model = joblib.load("credit_card_fraud_model.pkl")
 
 # -------- THEME TOGGLE ------------
-
-import streamlit as st
-
 # ---- THEME TOGGLE ----
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-# Sidebar radio button to toggle theme
 theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
-
-# Update theme in session state
 st.session_state["theme"] = theme
+
 
 # Apply the theme based on `st.session_state["theme"]`
 if st.session_state["theme"] == "dark":
