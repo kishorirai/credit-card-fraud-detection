@@ -339,7 +339,7 @@ accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
 # Create the bar plot
 sns.set(style="whitegrid")
-fig, ax = plt.subplots(figsize=(3, 1))
+fig, ax = plt.subplots(figsize=(4, 2))
 sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax)
 
 # Set labels and title
@@ -360,6 +360,30 @@ st.markdown("""
 - **Preprocessing**: Normalization and PCA used for visualization
 """)
 
+ # Visualize Confusion Matrix (Static Example)
+    st.markdown("### 📊 Confusion Matrix (Example)")
+# Example values (replace with your actual ones if needed)
+    y_true = [0, 0, 1, 1, 0, 1, 0, 0, 1, 1]  # True labels
+    y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]  # Predicted labels
+
+    cm = confusion_matrix(y_true, y_pred)
+
+    fig, ax = plt.subplots(figsize=(4, 3))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+                xticklabels=['Non-Fraud', 'Fraud'],
+                yticklabels=['Non-Fraud', 'Fraud'], ax=ax)
+    ax.set_xlabel("Predicted Label")
+    ax.set_ylabel("True Label")
+    ax.set_title("Confusion Matrix")
+    st.pyplot(fig)
+
+    # Optional note to explain
+    st.markdown("""
+    - **TP**: Correctly predicted fraud transactions  
+    - **TN**: Correctly predicted non-fraud transactions  
+    - **FP**: Non-fraud predicted as fraud  
+    - **FN**: Fraud predicted as non-fraud  
+    """)
 
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
