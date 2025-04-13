@@ -340,7 +340,7 @@ model_names = ['Random Forest', 'Logistic Regression', 'SVM']
 accuracies = [99.8, 95.4, 98.5]  # Replace with your actual accuracy values
 
 sns.set(style="whitegrid")
-fig, ax = plt.subplots(figsize=(4, 2))
+fig, ax = plt.subplots(figsize=(3, 1.5))
 sns.barplot(x=model_names, y=accuracies, palette="Blues_d", ax=ax)
 
 ax.set_xlabel('Model')
@@ -368,7 +368,7 @@ y_pred = [0, 0, 1, 1, 0, 0, 0, 1, 1, 1]  # Model predictions
 
 cm = confusion_matrix(y_true, y_pred)
 
-fig, ax = plt.subplots(figsize=(4, 3))
+fig, ax = plt.subplots(figsize=(3, 2))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
             xticklabels=['Non-Fraud', 'Fraud'],
             yticklabels=['Non-Fraud', 'Fraud'], ax=ax)
