@@ -193,6 +193,7 @@ if uploaded_file is not None:
     except Exception as e:
         st.error(f"❌ Error: {e}")
 
+# ---------- TAB 3 ----------
 # ---------- Feature Visualization ----------
 if visual_tab == "📊 Feature Visualization":
     st.markdown("### 📊 Visualize Transaction Features")
@@ -223,6 +224,8 @@ if visual_tab == "📊 Feature Visualization":
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
+
+# ---------- TAB 4 ----------
 # ---------- Anomaly Detection ----------
 if visual_tab == "🔍 Anomaly Detection":
     st.markdown("### 🔍 Anomaly Detection Visualization")
@@ -242,6 +245,8 @@ if visual_tab == "🔍 Anomaly Detection":
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
+
+# ---------- TAB 5 ----------
 # ---------- Model Details ----------
 if visual_tab == "ℹ️ Model Details":
     st.markdown("### ℹ️ Model Details")
@@ -255,6 +260,6 @@ if visual_tab == "ℹ️ Model Details":
 # ---- FOOTER ----
 st.markdown("""
 <div class='footer'>
-    📝 Made with ❤️ for credit card fraud detection using ML.
+    📝 Made by Kishori Kumari, MITS (Gwl)
 </div>
 """, unsafe_allow_html=True)
