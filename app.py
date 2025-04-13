@@ -21,6 +21,15 @@ if "theme" not in st.session_state:
 theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
 st.session_state["theme"] = theme
 
+#------------- Sidebar Navigation for Visualization/Details-----------
+st.sidebar.markdown("### 📂 Visual Analysis Tools")
+visual_tab = st.sidebar.radio(
+    "Go to section",
+    ["📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"]
+)
+
+
+
 # ---- CUSTOM STYLING ----
 if theme == "light":
     bg_color = "#f6f9fc"
@@ -196,49 +205,32 @@ with tab2:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ---------- TAB 3: Feature Visualization ---------- 
-# ---------- TAB 3: Feature Visualization ---------- 
-with tab3:
+# ---------- FEATURE VISUALIZATION ----------
+if visual_tab == "📊 Feature Visualization":
     st.markdown("### 📊 Visualize Transaction Features")
-    uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
+    uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
 
-    if uploaded_viz is not None:
+    if uploaded_file is not None:
         try:
-            df_viz = pd.read_csv(uploaded_viz)
-
-            required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-            missing_cols = [col for col in required_cols if col not in df_viz.columns]
-            if missing_cols:
-                st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
-                st.stop()
-
-            st.success("✅ File loaded successfully!")
+            df = pd.read_csv(uploaded_file)
 
             st.subheader("📉 2D PCA of the Transactions")
             pca = PCA(n_components=2)
-            pca_result = pca.fit_transform(df_viz[required_cols])
+            pca_result = pca.fit_transform(df.drop(columns=["Class"], errors='ignore'))
 
             fig, ax = plt.subplots()
-            if "Class" in df_viz.columns:
-                scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
-                legend = ax.legend(*scatter.legend_elements(), title="Class")
-                ax.add_artist(legend)
-            else:
-                ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
-                ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
-
+            scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df.get("Class", 0), cmap="coolwarm", alpha=0.7)
             ax.set_title("PCA - 2D Projection")
             ax.set_xlabel("Principal Component 1")
             ax.set_ylabel("Principal Component 2")
             st.pyplot(fig)
 
-            # Feature correlation heatmap
             st.subheader("📊 Correlation Heatmap")
-            fig2, ax2 = plt.subplots(figsize=(10, 8))
-            corr = df_viz.corr()
-            sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
-            ax2.set_title("Correlation Heatmap of Features")
-            st.pyplot(fig2)
+            corr = df.corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=False, cmap="coolwarm", ax=ax)
+            ax.set_title("Correlation Heatmap of Features")
+            st.pyplot(fig)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
