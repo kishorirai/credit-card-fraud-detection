@@ -178,21 +178,39 @@ UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
-# Tab 2: CSV Upload
-with tab2:
+#---------------------- Tab 2: CSV Upload---------------------
+
+
+import os
+from datetime import datetime
+import pandas as pd
+import streamlit as st
+
+# Ensure the folder for saving uploaded files exists
+UPLOAD_DIR = "uploaded_files"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Define the model loading code (this should be your trained model)
+# model = load_your_model()
+
+with st.sidebar:
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
 
     if uploaded_file is not None:
         try:
+            # Read the uploaded CSV file
             df = pd.read_csv(uploaded_file)
 
+            # Drop the 'Class' column if exists
             if "Class" in df.columns:
                 df = df.drop(columns=["Class"])
 
+            # Display preview of the uploaded data
             st.markdown("#### 👀 Preview of Uploaded Data")
             st.dataframe(df.head())
 
+            # Model predictions
             predictions = model.predict(df)
             prediction_probs = model.predict_proba(df)[:, 1]
             df["Prediction"] = predictions
@@ -202,24 +220,29 @@ with tab2:
             st.success("🎯 Predictions done!")
             st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
-            # Save uploaded file permanently
+            # Save the uploaded file permanently with a timestamp
             file_path = os.path.join(UPLOAD_DIR, f"uploaded_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
             df.to_csv(file_path, index=False)
+
+            # Store the path of the last uploaded file in session state
             st.session_state["last_uploaded"] = file_path
 
-            # Download button
+            # Provide a download button for the results
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # Show last uploaded CSV
+    # Button to show the last uploaded CSV
     if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
         try:
+            # Read the last uploaded file from session state
+            last_uploaded_file = st.session_state["last_uploaded"]
             st.markdown("### 🔁 Last Uploaded CSV")
-            df = pd.read_csv(st.session_state["last_uploaded"])
+            df = pd.read_csv(last_uploaded_file)
 
+            # Display predictions for the last uploaded file
             predictions = model.predict(df)
             prediction_probs = model.predict_proba(df)[:, 1]
             df["Prediction"] = predictions
@@ -227,11 +250,11 @@ with tab2:
             df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
             st.dataframe(df.head())
-
             st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
         except Exception as e:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
+
 
 
 # --------------------- TAB 3: Feature Visualization ---------------------
