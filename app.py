@@ -21,15 +21,6 @@ if "theme" not in st.session_state:
 theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
 st.session_state["theme"] = theme
 
-#------------- Sidebar Navigation for Visualization/Details-----------
-st.sidebar.markdown("### 📂 Visual Analysis Tools")
-visual_tab = st.sidebar.radio(
-    "Go to section",
-    ["📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"]
-)
-
-
-
 # ---- CUSTOM STYLING ----
 if theme == "light":
     bg_color = "#f6f9fc"
@@ -44,7 +35,7 @@ else:
 
 st.markdown(f"""
 <style>
-    html, body, [class*="css"]  {{
+    html, body, [class*="css"] {{
         font-family: 'Poppins', sans-serif;
         background-color: {bg_color};
         color: {text_color};
@@ -98,117 +89,109 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# Sidebar Navigation for Visualization/Details
+st.sidebar.markdown("### 📂 Visual Analysis Tools")
+visual_tab = st.sidebar.radio(
+    "Go to section",
+    ["📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"]
+)
+
 # ---------- Manual Input ----------
 st.markdown("### 📝 Manual Input")
-# ... (your form code here)
+with st.form("manual_form"):
+    st.markdown("#### ⏱️ Enter Time")
+    time = st.number_input("Time", value=0.0)
+
+    st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        v1 = st.number_input("V1", value=0.0)
+        v2 = st.number_input("V2", value=0.0)
+        v3 = st.number_input("V3", value=0.0)
+        v4 = st.number_input("V4", value=0.0)
+        v5 = st.number_input("V5", value=0.0)
+        v6 = st.number_input("V6", value=0.0)
+        v7 = st.number_input("V7", value=0.0)
+        v8 = st.number_input("V8", value=0.0)
+        v9 = st.number_input("V9", value=0.0)
+        v10 = st.number_input("V10", value=0.0)
+        v11 = st.number_input("V11", value=0.0)
+        v12 = st.number_input("V12", value=0.0)
+        v13 = st.number_input("V13", value=0.0)
+        v14 = st.number_input("V14", value=0.0)
+
+    with col2:
+        v15 = st.number_input("V15", value=0.0)
+        v16 = st.number_input("V16", value=0.0)
+        v17 = st.number_input("V17", value=0.0)
+        v18 = st.number_input("V18", value=0.0)
+        v19 = st.number_input("V19", value=0.0)
+        v20 = st.number_input("V20", value=0.0)
+        v21 = st.number_input("V21", value=0.0)
+        v22 = st.number_input("V22", value=0.0)
+        v23 = st.number_input("V23", value=0.0)
+        v24 = st.number_input("V24", value=0.0)
+        v25 = st.number_input("V25", value=0.0)
+        v26 = st.number_input("V26", value=0.0)
+        v27 = st.number_input("V27", value=0.0)
+        v28 = st.number_input("V28", value=0.0)
+
+    st.markdown("#### 💰 Enter Transaction Amount")
+    amount = st.number_input("Amount", value=0.0)
+
+    submitted = st.form_submit_button("🔎 Predict")
+
+if submitted:
+    features = [time] + [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
+                         v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
+                         v21, v22, v23, v24, v25, v26, v27, v28, amount]
+
+    input_array = np.array([features])
+    prediction = model.predict(input_array)[0]
+    prediction_prob = model.predict_proba(input_array)[0][1]
+    result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
+    confidence = f"{prediction_prob * 100:.2f}%"
+    fraud_risk_score = int(prediction_prob * 100)
+
+    st.markdown(f"### 🧾 Result: {result}")
+    st.markdown(f"**Confidence Level:** {confidence}")
+    st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
 
 # ---------- CSV Upload ----------
-st.markdown("### 📁 Upload CSV")
-# ... (your CSV upload code here)
+st.markdown("### 📂 Upload CSV File")
+uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
 
-   
-    # ---------- TAB 1: Manual Input ----------
-with tab1:
-    st.markdown("### 🔍 Manually Enter Transaction Features")
-    with st.form("manual_form"):
-        st.markdown("#### ⏱️ Enter Time")
-        time = st.number_input("Time", value=0.0)
+if uploaded_file is not None:
+    try:
+        df = pd.read_csv(uploaded_file)
 
-        st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
-        col1, col2 = st.columns(2)
+        if "Class" in df.columns:
+            df = df.drop(columns=["Class"])
 
-        with col1:
-            v1 = st.number_input("V1", value=0.0)
-            v2 = st.number_input("V2", value=0.0)
-            v3 = st.number_input("V3", value=0.0)
-            v4 = st.number_input("V4", value=0.0)
-            v5 = st.number_input("V5", value=0.0)
-            v6 = st.number_input("V6", value=0.0)
-            v7 = st.number_input("V7", value=0.0)
-            v8 = st.number_input("V8", value=0.0)
-            v9 = st.number_input("V9", value=0.0)
-            v10 = st.number_input("V10", value=0.0)
-            v11 = st.number_input("V11", value=0.0)
-            v12 = st.number_input("V12", value=0.0)
-            v13 = st.number_input("V13", value=0.0)
-            v14 = st.number_input("V14", value=0.0)
+        st.markdown("#### 👀 Preview of Uploaded Data")
+        st.dataframe(df.head())
 
-        with col2:
-            v15 = st.number_input("V15", value=0.0)
-            v16 = st.number_input("V16", value=0.0)
-            v17 = st.number_input("V17", value=0.0)
-            v18 = st.number_input("V18", value=0.0)
-            v19 = st.number_input("V19", value=0.0)
-            v20 = st.number_input("V20", value=0.0)
-            v21 = st.number_input("V21", value=0.0)
-            v22 = st.number_input("V22", value=0.0)
-            v23 = st.number_input("V23", value=0.0)
-            v24 = st.number_input("V24", value=0.0)
-            v25 = st.number_input("V25", value=0.0)
-            v26 = st.number_input("V26", value=0.0)
-            v27 = st.number_input("V27", value=0.0)
-            v28 = st.number_input("V28", value=0.0)
+        predictions = model.predict(df)
+        prediction_probs = model.predict_proba(df)[:, 1]
+        df["Prediction"] = predictions
+        df["Confidence"] = prediction_probs * 100
+        df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-        st.markdown("#### 💰 Enter Transaction Amount")
-        amount = st.number_input("Amount", value=0.0)
+        st.success("🎯 Predictions done!")
+        st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
-        submitted = st.form_submit_button("🔎 Predict")
+        # Show Cross-validation scores
+        cv_scores = cross_val_score(model, df.drop(columns=["Prediction", "Result"]), df["Prediction"], cv=5)
+        st.markdown(f"**Model Cross-validation Score**: {np.mean(cv_scores):.2f} ± {np.std(cv_scores):.2f}")
 
-    if submitted:
-        features = [time] + [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
-                             v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
-                             v21, v22, v23, v24, v25, v26, v27, v28, amount]
+        csv = df.to_csv(index=False).encode("utf-8")
+        st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
 
-        input_array = np.array([features])
-        prediction = model.predict(input_array)[0]
-        prediction_prob = model.predict_proba(input_array)[0][1]
-        result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
-        confidence = f"{prediction_prob * 100:.2f}%"
-        fraud_risk_score = int(prediction_prob * 100)
+    except Exception as e:
+        st.error(f"❌ Error: {e}")
 
-        st.markdown(f"### 🧾 Result: {result}")
-        st.markdown(f"**Confidence Level:** {confidence}")
-        st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
-
-
-
-      
-# ---------- TAB 2: CSV Upload ---------- 
-with tab2:
-    st.markdown("### 📂 Upload a CSV File")
-    uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
-
-    if uploaded_file is not None:
-        try:
-            df = pd.read_csv(uploaded_file)
-
-            if "Class" in df.columns:
-                df = df.drop(columns=["Class"])
-
-            st.markdown("#### 👀 Preview of Uploaded Data")
-            st.dataframe(df.head())
-
-            predictions = model.predict(df)
-            prediction_probs = model.predict_proba(df)[:, 1]
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
-
-            st.success("🎯 Predictions done!")
-            st.dataframe(df[["Prediction", "Confidence", "Result"]])
-
-            # Show Cross-validation scores
-            cv_scores = cross_val_score(model, df.drop(columns=["Prediction", "Result"]), df["Prediction"], cv=5)
-            st.markdown(f"**Model Cross-validation Score**: {np.mean(cv_scores):.2f} ± {np.std(cv_scores):.2f}")
-
-            csv = df.to_csv(index=False).encode("utf-8")
-            st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
-
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-
-# ---------- TAB 3 ----------
-
+# ---------- Feature Visualization ----------
 if visual_tab == "📊 Feature Visualization":
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -238,54 +221,36 @@ if visual_tab == "📊 Feature Visualization":
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-
-# ---------- TAB 4: Anomaly Detection ---------- 
-# ---------- ANOMALY DETECTION ----------
-elif visual_tab == "🔍 Anomaly Detection":
+# ---------- Anomaly Detection ----------
+if visual_tab == "🔍 Anomaly Detection":
     st.markdown("### 🔍 Anomaly Detection Visualization")
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-            predictions = model.predict(df)
-            prediction_probs = model.predict_proba(df)[:, 1]
 
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
-
-            df_sorted = df.sort_values(by="Confidence", ascending=False)
-            st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
-            st.dataframe(df_sorted.head())
-
-            fig, ax = plt.subplots()
-            ax.hist(df["Confidence"], bins=30, color='skyblue', edgecolor='black')
-            ax.set_title("Confidence Score Distribution")
-            ax.set_xlabel("Fraud Confidence (%)")
-            ax.set_ylabel("Frequency")
-            st.pyplot(fig)
-
-            st.success("🎯 Anomaly Detection complete!")
+            st.subheader("📊 Anomaly Scores")
+            from sklearn.ensemble import IsolationForest
+            model = IsolationForest(contamination=0.1)
+            anomalies = model.fit_predict(df.drop(columns=["Class"], errors='ignore'))
+            df["Anomaly"] = anomalies
+            st.write(df.head())
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-
-
-# ---------- TAB 5: Model Details ---------- 
-# ---------- MODEL DETAILS ----------
-elif visual_tab == "ℹ️ Model Details":
+# ---------- Model Details ----------
+if visual_tab == "ℹ️ Model Details":
     st.markdown("### ℹ️ Model Details")
-    with st.expander("🔍 Expand for more information"):
-        st.markdown("""
-        - **Model Type**: Random Forest Classifier (or your preferred model)
-        - **Dataset**: Credit Card Fraud Detection dataset from Kaggle
-        - **Accuracy**: 99.8% (Depending on the model parameters and preprocessing)
-        - **Objective**: Detect fraudulent transactions based on past data
-        - **Preprocessing**: Normalization and PCA used for visualization
-        """)
-        st.image("https://upload.wikimedia.org/wikipedia/commons/a/a3/Random_forest_diagram_complete.png", caption="Random Forest Classifier")
+    st.markdown(f"#### Model Type: **{type(model).__name__}**")
+    st.markdown(f"#### Model Accuracy (cross-validation): {np.mean(cv_scores):.2f}")
+    st.markdown(f"#### Model Created By: **Your Name**")
+    st.markdown(f"#### Date: **{pd.Timestamp.now().strftime('%Y-%m-%d')}**")
 
 # ---- FOOTER ----
-st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
+st.markdown("""
+<div class='footer'>
+    📝 Made with ❤️ for credit card fraud detection using ML.
+</div>
+""", unsafe_allow_html=True)
