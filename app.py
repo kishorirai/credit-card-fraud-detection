@@ -23,27 +23,39 @@ model = joblib.load("credit_card_fraud_model.pkl")
 # -------- THEME TOGGLE ------------
 
 
+import streamlit as st
+
 # ---- THEME TOGGLE ----
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-# Custom CSS to place the button at the top-right
+# Custom CSS to position the button at the top-left corner
 st.markdown("""
     <style>
     .theme-toggle-btn {
         position: absolute;
         top: 10px;
-        right: 10px;
+        left: 10px;
+        background-color: #0078d4;
+        color: white;
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+    .theme-toggle-btn:hover {
+        background-color: #005a8d;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Button to toggle theme (placed at top right)
-theme = st.button("🌗 Toggle Theme")
+# Button to toggle theme (placed at top-left)
+theme = st.button("🌗 Toggle Theme", key="theme_toggle", help="Click to toggle between light and dark themes")
 
 # Toggle logic
 if theme:
     st.session_state["theme"] = "dark" if st.session_state["theme"] == "light" else "light"
+    st.experimental_rerun()  # Force a rerun to apply the theme change
 
 # Apply the theme based on `st.session_state["theme"]` (you can add specific styling for light/dark themes)
 if st.session_state["theme"] == "dark":
