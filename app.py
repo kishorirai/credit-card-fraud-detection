@@ -121,22 +121,13 @@ st.markdown(f"""
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
 # ---------- TAB 1: Manual Input ----------
-
 # ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
 
-    # Sample inputs for users to refer to
-    st.markdown("#### Sample Input Values")
-    st.markdown("""
-    - **Time**: 123.0
-    - **V1**: 0.1, **V2**: 0.2, **V3**: -0.1, **V4**: 0.3
-    - **Amount**: 20.0
-    """)
-
     with st.form("manual_form"):
         st.markdown("#### ⏱️ Enter Time")
-        time = st.number_input("Time", value=123.0)
+        time = st.number_input("Time", value=123.0)  # Sample Value: 123.0
 
         st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
 
@@ -144,39 +135,39 @@ with tab1:
         col1, col2 = st.columns(2)
 
         with col1:
-            v1 = st.number_input("V1", value=0.1)
-            v2 = st.number_input("V2", value=0.2)
-            v3 = st.number_input("V3", value=-0.1)
-            v4 = st.number_input("V4", value=0.3)
-            v5 = st.number_input("V5", value=0.0)
-            v6 = st.number_input("V6", value=0.0)
-            v7 = st.number_input("V7", value=0.0)
-            v8 = st.number_input("V8", value=0.0)
-            v9 = st.number_input("V9", value=0.0)
-            v10 = st.number_input("V10", value=0.0)
-            v11 = st.number_input("V11", value=0.0)
-            v12 = st.number_input("V12", value=0.0)
-            v13 = st.number_input("V13", value=0.0)
-            v14 = st.number_input("V14", value=0.0)
+            v1 = st.number_input("V1", value=0.1)  # Sample Value: 0.1
+            v2 = st.number_input("V2", value=0.2)  # Sample Value: 0.2
+            v3 = st.number_input("V3", value=1.1)  # Sample Value: 1.1
+            v4 = st.number_input("V4", value=-0.3)  # Sample Value: -0.3
+            v5 = st.number_input("V5", value=0.5)  # Sample Value: 0.5
+            v6 = st.number_input("V6", value=0.0)  # Sample Value: 0.0
+            v7 = st.number_input("V7", value=0.4)  # Sample Value: 0.4
+            v8 = st.number_input("V8", value=0.2)  # Sample Value: 0.2
+            v9 = st.number_input("V9", value=1.0)  # Sample Value: 1.0
+            v10 = st.number_input("V10", value=-0.5)  # Sample Value: -0.5
+            v11 = st.number_input("V11", value=0.3)  # Sample Value: 0.3
+            v12 = st.number_input("V12", value=0.7)  # Sample Value: 0.7
+            v13 = st.number_input("V13", value=-0.1)  # Sample Value: -0.1
+            v14 = st.number_input("V14", value=0.8)  # Sample Value: 0.8
 
         with col2:
-            v15 = st.number_input("V15", value=0.0)
-            v16 = st.number_input("V16", value=0.0)
-            v17 = st.number_input("V17", value=0.0)
-            v18 = st.number_input("V18", value=0.0)
-            v19 = st.number_input("V19", value=0.0)
-            v20 = st.number_input("V20", value=0.0)
-            v21 = st.number_input("V21", value=0.0)
-            v22 = st.number_input("V22", value=0.0)
-            v23 = st.number_input("V23", value=0.0)
-            v24 = st.number_input("V24", value=0.0)
-            v25 = st.number_input("V25", value=0.0)
-            v26 = st.number_input("V26", value=0.0)
-            v27 = st.number_input("V27", value=0.0)
-            v28 = st.number_input("V28", value=0.0)
+            v15 = st.number_input("V15", value=0.6)  # Sample Value: 0.6
+            v16 = st.number_input("V16", value=0.4)  # Sample Value: 0.4
+            v17 = st.number_input("V17", value=1.3)  # Sample Value: 1.3
+            v18 = st.number_input("V18", value=-0.2)  # Sample Value: -0.2
+            v19 = st.number_input("V19", value=0.0)  # Sample Value: 0.0
+            v20 = st.number_input("V20", value=-0.6)  # Sample Value: -0.6
+            v21 = st.number_input("V21", value=0.9)  # Sample Value: 0.9
+            v22 = st.number_input("V22", value=0.4)  # Sample Value: 0.4
+            v23 = st.number_input("V23", value=0.5)  # Sample Value: 0.5
+            v24 = st.number_input("V24", value=1.2)  # Sample Value: 1.2
+            v25 = st.number_input("V25", value=-0.3)  # Sample Value: -0.3
+            v26 = st.number_input("V26", value=0.8)  # Sample Value: 0.8
+            v27 = st.number_input("V27", value=0.1)  # Sample Value: 0.1
+            v28 = st.number_input("V28", value=0.2)  # Sample Value: 0.2
 
         st.markdown("#### 💰 Enter Transaction Amount")
-        amount = st.number_input("Amount", value=20.0)
+        amount = st.number_input("Amount", value=20.0)  # Sample Value: 20.0
 
         submitted = st.form_submit_button("🔎 Predict")
 
@@ -199,6 +190,7 @@ with tab1:
         st.markdown(f"### 🧾 Result: {result}")
         st.markdown(f"**Confidence Level:** {confidence}")
         st.markdown(f"**Fraud Risk Score:** {fraud_risk_score}")
+
 
 
 # ---------- TAB 2: CSV Upload ---------- 
