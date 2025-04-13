@@ -22,6 +22,8 @@ model = joblib.load("credit_card_fraud_model.pkl")
 
 # -------- THEME TOGGLE ------------
 
+
+# ---- THEME TOGGLE ----
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
@@ -37,12 +39,32 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Button to toggle theme (placed at top right)
-theme = st.button("🌗 Toggle Theme", key="theme_toggle", help="Click to toggle between light and dark themes", 
-                  use_container_width=False, css_class="theme-toggle-btn")
+theme = st.button("🌗 Toggle Theme")
 
 # Toggle logic
 if theme:
     st.session_state["theme"] = "dark" if st.session_state["theme"] == "light" else "light"
+
+# Apply the theme based on `st.session_state["theme"]` (you can add specific styling for light/dark themes)
+if st.session_state["theme"] == "dark":
+    st.markdown("""
+        <style>
+        body {
+            background-color: #121212;
+            color: white;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        body {
+            background-color: white;
+            color: black;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
 
 
 # ---- CUSTOM STYLING --------------
