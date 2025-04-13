@@ -98,9 +98,13 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ---- TABS ----
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
+# ---------- Manual Input ----------
+st.markdown("### 📝 Manual Input")
+# ... (your form code here)
 
+# ---------- CSV Upload ----------
+st.markdown("### 📁 Upload CSV")
+# ... (your CSV upload code here)
 
    
     # ---------- TAB 1: Manual Input ----------
