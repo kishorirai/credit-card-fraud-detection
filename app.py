@@ -102,8 +102,6 @@ st.markdown(f"""
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
 
-# ---------- TAB 1: Manual Input ----------
-
    
     # ---------- TAB 1: Manual Input ----------
 with tab1:
@@ -205,7 +203,8 @@ with tab2:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-# ---------- FEATURE VISUALIZATION ----------
+# ---------- TAB 3 ----------
+
 if visual_tab == "📊 Feature Visualization":
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -237,79 +236,42 @@ if visual_tab == "📊 Feature Visualization":
 
 
 # ---------- TAB 4: Anomaly Detection ---------- 
-
-# ---------- TAB 4: Anomaly Detection ---------- 
-with tab4:
+# ---------- ANOMALY DETECTION ----------
+elif visual_tab == "🔍 Anomaly Detection":
     st.markdown("### 🔍 Anomaly Detection Visualization")
-    uploaded_anomaly = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
+    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
-    if uploaded_anomaly is not None:
+    if uploaded_file is not None:
         try:
-            df_anomaly = pd.read_csv(uploaded_anomaly)
+            df = pd.read_csv(uploaded_file)
+            predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]
 
-            required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-            missing_cols = [col for col in required_cols if col not in df_anomaly.columns]
-            if missing_cols:
-                st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
-                st.stop()
+            df["Prediction"] = predictions
+            df["Confidence"] = prediction_probs * 100
+            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-            st.success("✅ File loaded successfully!")
-
-            input_data = df_anomaly[required_cols]
-            predictions = model.predict(input_data)
-            prediction_probs = model.predict_proba(input_data)[:, 1]
-
-            df_anomaly["Prediction"] = predictions
-            df_anomaly["Confidence"] = (prediction_probs * 100).round(2)
-            df_anomaly["Result"] = df_anomaly["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
-
-            df_sorted = df_anomaly.sort_values(by="Confidence", ascending=False)
-
+            df_sorted = df.sort_values(by="Confidence", ascending=False)
             st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
-            st.dataframe(df_sorted.head(5))
+            st.dataframe(df_sorted.head())
+
+            fig, ax = plt.subplots()
+            ax.hist(df["Confidence"], bins=30, color='skyblue', edgecolor='black')
+            ax.set_title("Confidence Score Distribution")
+            ax.set_xlabel("Fraud Confidence (%)")
+            ax.set_ylabel("Frequency")
+            st.pyplot(fig)
 
             st.success("🎯 Anomaly Detection complete!")
 
-            # 📈 Histogram of confidence scores
-            st.subheader("📈 Confidence Score Distribution")
-            fig1, ax1 = plt.subplots()
-            sns.histplot(df_anomaly["Confidence"], bins=20, kde=True, color="orange", ax=ax1)
-            ax1.set_xlabel("Fraud Confidence Score (%)")
-            ax1.set_ylabel("Count")
-            ax1.set_title("Distribution of Fraud Confidence Scores")
-            st.pyplot(fig1)
-
-            # 🥧 Pie chart of legit vs fraud
-            st.subheader("🥧 Fraud vs Legitimate Transactions")
-            fraud_counts = df_anomaly["Prediction"].value_counts().sort_index()
-            labels = ["Legit", "Fraud"]
-            sizes = [fraud_counts.get(0, 0), fraud_counts.get(1, 0)]
-            colors = ["#8fd19e", "#f46d43"]
-            fig2, ax2 = plt.subplots()
-            ax2.pie(sizes, labels=labels, autopct="%1.1f%%", colors=colors, startangle=140)
-            ax2.axis("equal")
-            st.pyplot(fig2)
-
-            # 💸 Scatterplot: Amount vs Confidence
-            st.subheader("💸 Amount vs Fraud Risk")
-            fig3, ax3 = plt.subplots()
-            scatter = ax3.scatter(df_anomaly["Amount"], df_anomaly["Confidence"], 
-                                  c=df_anomaly["Prediction"], cmap="coolwarm", alpha=0.6)
-            ax3.set_xlabel("Transaction Amount")
-            ax3.set_ylabel("Fraud Confidence (%)")
-            ax3.set_title("Transaction Amount vs. Fraud Confidence")
-            st.pyplot(fig3)
-
-            # Download button
-            csv_anomaly = df_anomaly.to_csv(index=False).encode("utf-8")
-            st.download_button("📥 Download Results", csv_anomaly, "anomaly_results.csv", "text/csv")
-
         except Exception as e:
-            st.error(f"❌ Error during processing: {e}")
+            st.error(f"❌ Error: {e}")
+
 
 
 # ---------- TAB 5: Model Details ---------- 
-with tab5:
+# ---------- MODEL DETAILS ----------
+elif visual_tab == "ℹ️ Model Details":
     st.markdown("### ℹ️ Model Details")
     with st.expander("🔍 Expand for more information"):
         st.markdown("""
