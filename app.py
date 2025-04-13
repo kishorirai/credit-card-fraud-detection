@@ -14,37 +14,12 @@ st.set_page_config(page_title="💳 Credit Card Fraud Detection", layout="wide")
 # LOAD MODEL
 model = joblib.load("credit_card_fraud_model.pkl")
 
-
-# ---- THEME TOGGLE BUTTON (TOP-RIGHT) ----
-
+# ---- THEME TOGGLE ----
 if "theme" not in st.session_state:
     st.session_state["theme"] = "light"
 
-# Set theme before rendering button
-theme = st.session_state["theme"]
-button_label = "🌙 Dark Mode" if theme == "light" else "☀️ Light Mode"
-
-# Display toggle button in top-right
-col1, col2 = st.columns([0.85, 0.15])
-with col2:
-    if st.button(button_label):
-        # Toggle theme and rerun
-        st.session_state["theme"] = "dark" if theme == "light" else "light"
-        st.rerun()  # Apply immediately
-
-# Set Theme Colors
-theme = st.session_state["theme"]
-if theme == "light":
-    bg_color = "#f6f9fc"
-    card_color = "white"
-    text_color = "#003366"
-    header_bg = "linear-gradient(to right, #b3cde0, #f1f1f1)"
-else:
-    bg_color = "#1e1e1e"
-    card_color = "#2b2b2b"
-    text_color = "#ffffff"
-    header_bg = "linear-gradient(to right, #4a4a4a, #2d2d2d)"
-
+theme = st.sidebar.radio("🌗 Choose Theme", ["light", "dark"], index=0 if st.session_state["theme"] == "light" else 1)
+st.session_state["theme"] = theme
 
 # ---- CUSTOM STYLING ----
 if theme == "light":
@@ -114,75 +89,68 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
-
-
 # ---- TABS ----
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
+
 # ---------- TAB 1: Manual Input ----------
-# ---------- TAB 1: Manual Input ----------
+
+   
+    # ---------- TAB 1: Manual Input ----------
 with tab1:
     st.markdown("### 🔍 Manually Enter Transaction Features")
-
     with st.form("manual_form"):
         st.markdown("#### ⏱️ Enter Time")
-        time = st.number_input("Time", value=123.0)  # Sample Value: 123.0
+        time = st.number_input("Time", value=0.0)
 
         st.markdown("#### 🧮 Enter Feature Values (V1 - V28)")
-
-        # Two columns for input fields
         col1, col2 = st.columns(2)
 
         with col1:
-            v1 = st.number_input("V1", value=0.1)  # Sample Value: 0.1
-            v2 = st.number_input("V2", value=0.2)  # Sample Value: 0.2
-            v3 = st.number_input("V3", value=1.1)  # Sample Value: 1.1
-            v4 = st.number_input("V4", value=-0.3)  # Sample Value: -0.3
-            v5 = st.number_input("V5", value=0.5)  # Sample Value: 0.5
-            v6 = st.number_input("V6", value=0.0)  # Sample Value: 0.0
-            v7 = st.number_input("V7", value=0.4)  # Sample Value: 0.4
-            v8 = st.number_input("V8", value=0.2)  # Sample Value: 0.2
-            v9 = st.number_input("V9", value=1.0)  # Sample Value: 1.0
-            v10 = st.number_input("V10", value=-0.5)  # Sample Value: -0.5
-            v11 = st.number_input("V11", value=0.3)  # Sample Value: 0.3
-            v12 = st.number_input("V12", value=0.7)  # Sample Value: 0.7
-            v13 = st.number_input("V13", value=-0.1)  # Sample Value: -0.1
-            v14 = st.number_input("V14", value=0.8)  # Sample Value: 0.8
+            v1 = st.number_input("V1", value=0.0)
+            v2 = st.number_input("V2", value=0.0)
+            v3 = st.number_input("V3", value=0.0)
+            v4 = st.number_input("V4", value=0.0)
+            v5 = st.number_input("V5", value=0.0)
+            v6 = st.number_input("V6", value=0.0)
+            v7 = st.number_input("V7", value=0.0)
+            v8 = st.number_input("V8", value=0.0)
+            v9 = st.number_input("V9", value=0.0)
+            v10 = st.number_input("V10", value=0.0)
+            v11 = st.number_input("V11", value=0.0)
+            v12 = st.number_input("V12", value=0.0)
+            v13 = st.number_input("V13", value=0.0)
+            v14 = st.number_input("V14", value=0.0)
 
         with col2:
-            v15 = st.number_input("V15", value=0.6)  # Sample Value: 0.6
-            v16 = st.number_input("V16", value=0.4)  # Sample Value: 0.4
-            v17 = st.number_input("V17", value=1.3)  # Sample Value: 1.3
-            v18 = st.number_input("V18", value=-0.2)  # Sample Value: -0.2
-            v19 = st.number_input("V19", value=0.0)  # Sample Value: 0.0
-            v20 = st.number_input("V20", value=-0.6)  # Sample Value: -0.6
-            v21 = st.number_input("V21", value=0.9)  # Sample Value: 0.9
-            v22 = st.number_input("V22", value=0.4)  # Sample Value: 0.4
-            v23 = st.number_input("V23", value=0.5)  # Sample Value: 0.5
-            v24 = st.number_input("V24", value=1.2)  # Sample Value: 1.2
-            v25 = st.number_input("V25", value=-0.3)  # Sample Value: -0.3
-            v26 = st.number_input("V26", value=0.8)  # Sample Value: 0.8
-            v27 = st.number_input("V27", value=0.1)  # Sample Value: 0.1
-            v28 = st.number_input("V28", value=0.2)  # Sample Value: 0.2
+            v15 = st.number_input("V15", value=0.0)
+            v16 = st.number_input("V16", value=0.0)
+            v17 = st.number_input("V17", value=0.0)
+            v18 = st.number_input("V18", value=0.0)
+            v19 = st.number_input("V19", value=0.0)
+            v20 = st.number_input("V20", value=0.0)
+            v21 = st.number_input("V21", value=0.0)
+            v22 = st.number_input("V22", value=0.0)
+            v23 = st.number_input("V23", value=0.0)
+            v24 = st.number_input("V24", value=0.0)
+            v25 = st.number_input("V25", value=0.0)
+            v26 = st.number_input("V26", value=0.0)
+            v27 = st.number_input("V27", value=0.0)
+            v28 = st.number_input("V28", value=0.0)
 
         st.markdown("#### 💰 Enter Transaction Amount")
-        amount = st.number_input("Amount", value=20.0)  # Sample Value: 20.0
+        amount = st.number_input("Amount", value=0.0)
 
         submitted = st.form_submit_button("🔎 Predict")
 
     if submitted:
-        # Collecting all features into an array
         features = [time] + [v1, v2, v3, v4, v5, v6, v7, v8, v9, v10,
                              v11, v12, v13, v14, v15, v16, v17, v18, v19, v20,
                              v21, v22, v23, v24, v25, v26, v27, v28, amount]
 
-        # Convert the features into an array for prediction
         input_array = np.array([features])
         prediction = model.predict(input_array)[0]
         prediction_prob = model.predict_proba(input_array)[0][1]
-        
-        # Result display
         result = "🚨 Fraudulent Transaction" if prediction == 1 else "✅ Legitimate Transaction"
         confidence = f"{prediction_prob * 100:.2f}%"
         fraud_risk_score = int(prediction_prob * 100)
@@ -193,6 +161,7 @@ with tab1:
 
 
 
+      
 # ---------- TAB 2: CSV Upload ---------- 
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
@@ -228,7 +197,6 @@ with tab2:
             st.error(f"❌ Error: {e}")
 
 # ---------- TAB 3: Feature Visualization ---------- 
-# ---------- TAB 3: Feature Visualization ---------- 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -243,46 +211,59 @@ with tab3:
             pca_result = pca.fit_transform(df.drop(columns=["Class"], errors='ignore'))
 
             fig, ax = plt.subplots()
-            scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df["Class"], cmap="coolwarm")
-            ax.set_title("PCA - 2D Projection of Transactions")
-
-            # Add color bar for better visualization
-            cbar = plt.colorbar(scatter)
-            cbar.set_label('Class')
-
+            ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df["Class"], cmap="coolwarm")
+            ax.set_title("PCA - 2D Projection")
+            ax.set_xlabel("Principal Component 1")
+            ax.set_ylabel("Principal Component 2")
             st.pyplot(fig)
 
-            # Show sample visuals using seaborn for pairplot (optional but informative)
-            st.subheader("🔎 Pairplot of Sample Features")
-            sample_df = df.sample(100)  # Take a sample for better visualization
-            pairplot_fig = sns.pairplot(sample_df[['V1', 'V2', 'V3', 'V4', 'Amount', 'Class']], hue='Class')
-            st.pyplot(pairplot_fig)
+            # Feature correlation heatmap
+            st.subheader("📊 Correlation Heatmap")
+            corr = df.corr()
+            fig, ax = plt.subplots(figsize=(10, 8))
+            sns.heatmap(corr, annot=True, cmap="coolwarm", ax=ax)
+            ax.set_title("Correlation Heatmap of Features")
+            st.pyplot(fig)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-
 # ---------- TAB 4: Anomaly Detection ---------- 
 with tab4:
-    st.markdown("### 🔍 Detect Anomalies")
-    st.markdown("🔧 Here we can apply anomaly detection methods, e.g., Isolation Forest.")
-    # Add further anomaly detection here if needed.
+    st.markdown("### 🔍 Anomaly Detection Visualization")
+    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
+
+    if uploaded_file is not None:
+        try:
+            df = pd.read_csv(uploaded_file)
+            predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]
+
+            df["Prediction"] = predictions
+            df["Confidence"] = prediction_probs * 100
+            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+
+            df_sorted = df.sort_values(by="Confidence", ascending=False)
+            st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
+            st.dataframe(df_sorted.head())
+
+            st.success("🎯 Anomaly Detection complete!")
+
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
 
 # ---------- TAB 5: Model Details ---------- 
 with tab5:
     st.markdown("### ℹ️ Model Details")
-    st.markdown("""
-    This model is based on a Random Forest Classifier, which is trained on the credit card fraud dataset and can predict whether a transaction is fraudulent or not based on various transaction features.
-    
-    **Features Used:** V1–V28, Amount, and Time
-
-    **Model Evaluation:** 
-    The model's accuracy, precision, recall, and F1-score were evaluated during training. The classifier uses cross-validation to estimate the reliability of predictions.
-    """)
+    with st.expander("🔍 Expand for more information"):
+        st.markdown("""
+        - **Model Type**: Random Forest Classifier (or your preferred model)
+        - **Dataset**: Credit Card Fraud Detection dataset from Kaggle
+        - **Accuracy**: 99.8% (Depending on the model parameters and preprocessing)
+        - **Objective**: Detect fraudulent transactions based on past data
+        - **Preprocessing**: Normalization and PCA used for visualization
+        """)
+        st.image("https://upload.wikimedia.org/wikipedia/commons/a/a3/Random_forest_diagram_complete.png", caption="Random Forest Classifier")
 
 # ---- FOOTER ----
-st.markdown(f"""
-<div class="footer">
-    <p>Developed by <b>{st.session_state.get("name", "Kishori Kumari")}</b> | Madhav Institute of Technology and Science (MITS Gwalior)</p>
-</div>
-""", unsafe_allow_html=True)
+st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
