@@ -8,6 +8,9 @@ from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import confusion_matrix
+import os
+from datetime import datetime
+
 
 
 
@@ -174,8 +177,8 @@ from sklearn.model_selection import cross_val_score
 
 # Directory where uploaded files will be stored permanently
 UPLOAD_DIR = "uploaded_files"
-if not os.path.exists(UPLOAD_DIR):
-    os.makedirs(UPLOAD_DIR)
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 
 # Tab 2: CSV Upload
 with tab2:
@@ -184,13 +187,7 @@ with tab2:
 
     if uploaded_file is not None:
         try:
-            # Save the uploaded file permanently to the directory
-            file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
-            with open(file_path, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-
-            # Read the saved file
-            df = pd.read_csv(file_path)
+            df = pd.read_csv(uploaded_file)
 
             if "Class" in df.columns:
                 df = df.drop(columns=["Class"])
@@ -207,31 +204,40 @@ with tab2:
             st.success("🎯 Predictions done!")
             st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
-            # Show Cross-validation scores
-            cv_scores = cross_val_score(model, df.drop(columns=["Prediction", "Result"]), df["Prediction"], cv=5)
-            st.markdown(f"**Model Cross-validation Score**: {np.mean(cv_scores):.2f} ± {np.std(cv_scores):.2f}")
+            # Save uploaded file permanently
+            file_path = os.path.join(UPLOAD_DIR, f"uploaded_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+            df.to_csv(file_path, index=False)
+            st.session_state["last_uploaded"] = file_path
 
+            # Download button
             csv = df.to_csv(index=False).encode("utf-8")
             st.download_button("📥 Download Results", csv, "fraud_predictions.csv", "text/csv")
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # Show Last Uploaded CSV Button
-    if st.button("Show Last Uploaded CSV"):
-        # List all files in the upload directory and display the most recent one
-        uploaded_files = os.listdir(UPLOAD_DIR)
-        if uploaded_files:
-            last_uploaded_file = sorted(uploaded_files, key=lambda x: os.path.getmtime(os.path.join(UPLOAD_DIR, x)), reverse=True)[0]
-            last_uploaded_file_path = os.path.join(UPLOAD_DIR, last_uploaded_file)
-            df_last = pd.read_csv(last_uploaded_file_path)
-            st.markdown("#### 👀 Last Uploaded CSV Preview")
-            st.dataframe(df_last.head())
-        else:
-            st.warning("No file has been uploaded yet.")
+    # Show last uploaded CSV
+    if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
+        try:
+            st.markdown("### 🔁 Last Uploaded CSV")
+            df = pd.read_csv(st.session_state["last_uploaded"])
+
+            predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]
+            df["Prediction"] = predictions
+            df["Confidence"] = prediction_probs * 100
+            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+
+            st.dataframe(df.head())
+
+            st.dataframe(df[["Prediction", "Confidence", "Result"]])
+
+        except Exception as e:
+            st.error(f"⚠️ Failed to load last uploaded file: {e}")
+
 
 # ---------- TAB 3: Feature Visualization ---------- 
-# ---------- TAB 3: Feature Visualization ---------- 
+
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
