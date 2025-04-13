@@ -166,13 +166,31 @@ with tab1:
 
       
 # ---------- TAB 2: CSV Upload ---------- 
+import os
+import pandas as pd
+import streamlit as st
+import numpy as np
+from sklearn.model_selection import cross_val_score
+
+# Directory where uploaded files will be stored permanently
+UPLOAD_DIR = "uploaded_files"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR)
+
+# Tab 2: CSV Upload
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
 
     if uploaded_file is not None:
         try:
-            df = pd.read_csv(uploaded_file)
+            # Save the uploaded file permanently to the directory
+            file_path = os.path.join(UPLOAD_DIR, uploaded_file.name)
+            with open(file_path, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+
+            # Read the saved file
+            df = pd.read_csv(file_path)
 
             if "Class" in df.columns:
                 df = df.drop(columns=["Class"])
@@ -198,6 +216,19 @@ with tab2:
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
+
+    # Show Last Uploaded CSV Button
+    if st.button("Show Last Uploaded CSV"):
+        # List all files in the upload directory and display the most recent one
+        uploaded_files = os.listdir(UPLOAD_DIR)
+        if uploaded_files:
+            last_uploaded_file = sorted(uploaded_files, key=lambda x: os.path.getmtime(os.path.join(UPLOAD_DIR, x)), reverse=True)[0]
+            last_uploaded_file_path = os.path.join(UPLOAD_DIR, last_uploaded_file)
+            df_last = pd.read_csv(last_uploaded_file_path)
+            st.markdown("#### 👀 Last Uploaded CSV Preview")
+            st.dataframe(df_last.head())
+        else:
+            st.warning("No file has been uploaded yet.")
 
 # ---------- TAB 3: Feature Visualization ---------- 
 # ---------- TAB 3: Feature Visualization ---------- 
