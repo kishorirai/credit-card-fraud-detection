@@ -168,6 +168,7 @@ with tab1:
 #---------------------- Tab 2: CSV Upload---------------------
 
 
+
 import os
 from datetime import datetime
 import pandas as pd
@@ -180,7 +181,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Define the model loading code (this should be your trained model)
 # model = load_your_model()
 
-with st.sidebar:
+with st.container():  # Main content area, not sidebar
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
 
@@ -241,6 +242,8 @@ with st.sidebar:
 
         except Exception as e:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
+
+        
 
 
 
