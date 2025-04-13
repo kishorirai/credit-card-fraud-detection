@@ -219,6 +219,7 @@ with tab2:
             st.error(f"❌ Error: {e}")
 
 # ---------- TAB 3: Feature Visualization ---------- 
+# ---------- TAB 3: Feature Visualization ---------- 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_file = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -233,11 +234,24 @@ with tab3:
             pca_result = pca.fit_transform(df.drop(columns=["Class"], errors='ignore'))
 
             fig, ax = plt.subplots()
-            ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df["Class"], cmap="coolwarm")
+            scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df["Class"], cmap="coolwarm")
             ax.set_title("PCA - 2D Projection of Transactions")
+
+            # Add color bar for better visualization
+            cbar = plt.colorbar(scatter)
+            cbar.set_label('Class')
+
             st.pyplot(fig)
+
+            # Show sample visuals using seaborn for pairplot (optional but informative)
+            st.subheader("🔎 Pairplot of Sample Features")
+            sample_df = df.sample(100)  # Take a sample for better visualization
+            pairplot_fig = sns.pairplot(sample_df[['V1', 'V2', 'V3', 'V4', 'Amount', 'Class']], hue='Class')
+            st.pyplot(pairplot_fig)
+
         except Exception as e:
             st.error(f"❌ Error: {e}")
+
 
 # ---------- TAB 4: Anomaly Detection ---------- 
 with tab4:
