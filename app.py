@@ -333,91 +333,84 @@ with tab3:
 
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
-import os
 
-UPLOAD_DIR = "uploaded_files"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-# Define this immediately after UPLOAD_DIR
-LAST_FILE_PATH = os.path.join(UPLOAD_DIR, "last_uploaded_anomaly.csv")
-
+# ---------------- Tab 4: Anomaly Detection ----------------
 with tab4:
-    st.markdown("### 🔍 Anomaly Detection Visualization")
+    st.markdown("### 🧠 Anomaly Detection")
 
-    # Option to Load Last File
-    if os.path.exists(LAST_FILE_PATH):
-        # Button to show last uploaded file
-        if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_csv_tab4"):
-            try:
-                last_uploaded_file = pd.read_csv(LAST_FILE_PATH)
-                st.markdown("### 🔁 Last Uploaded CSV Preview")
-                st.dataframe(last_uploaded_file.head())
-            except Exception as e:
-                st.error(f"⚠️ Failed to load last uploaded file: {e}")
-    
-    # Rest of the tab 4 logic (Anomaly Detection CSV Upload, Predictions, etc.)
-    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
+    # File uploader
+    uploaded_file_anomaly = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
-    if uploaded_file is not None:
-        run_detection = st.button("🔄 Run Anomaly Detection")
+    # Save directory and path
+    UPLOAD_DIR = "uploaded_files"
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
+    LAST_FILE_PATH = os.path.join(UPLOAD_DIR, "last_uploaded_anomaly.csv")
 
-        if run_detection:
-            try:
-                df_raw = pd.read_csv(uploaded_file)
+    if uploaded_file_anomaly is not None:
+        try:
+            df_raw = pd.read_csv(uploaded_file_anomaly)
 
-                # ✅ Filter only required features
-                required_features = model.feature_names_in_
-                missing_features = set(required_features) - set(df_raw.columns)
-                if missing_features:
-                    st.error(f"🚫 Missing features in CSV: {', '.join(missing_features)}")
-                    st.stop()
+            # Validate required features
+            required_features = model.feature_names_in_
+            missing_features = set(required_features) - set(df_raw.columns)
+            if missing_features:
+                st.error(f"🚫 Missing features in CSV: {', '.join(missing_features)}")
+                st.stop()
 
-                df = df_raw[required_features]  # Keep only needed columns
+            # Prepare input
+            df = df_raw[required_features]
 
-                # 🔍 Make Predictions
-                predictions = model.predict(df)
-                prediction_probs = model.predict_proba(df)[:, 1]
+            # Run model
+            predictions = model.predict(df)
+            prediction_probs = model.predict_proba(df)[:, 1]
 
-                df_results = df_raw.copy()
-                df_results["Prediction"] = predictions
-                df_results["Confidence"] = prediction_probs * 100
-                df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+            # Final result
+            df_results = df_raw.copy()
+            df_results["Prediction"] = predictions
+            df_results["Confidence"] = prediction_probs * 100
+            df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-                # Save to temp file
-                df_results.to_csv(LAST_FILE_PATH, index=False)
+            # Save the result to file permanently
+            df_results.to_csv(LAST_FILE_PATH, index=False)
 
-                # 📊 Top Anomalies Table
-                df_sorted = df_results.sort_values(by="Confidence", ascending=False)
-                st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
-                st.dataframe(df_sorted.head())
+            # Show top 5 anomalies
+            df_sorted = df_results.sort_values(by="Confidence", ascending=False)
+            st.markdown("#### 📊 Top 5 Most Anomalous Transactions")
+            st.dataframe(df_sorted.head())
 
-                # 📈 Bar Chart Visualization
-                import altair as alt
-                top_anomalies = df_sorted.head()
-                chart = alt.Chart(top_anomalies.reset_index()).mark_bar().encode(
-                    x='Confidence:Q',
-                    y=alt.Y('index:N', sort='-x'),
-                    color='Prediction:N',
-                    tooltip=['Result', 'Confidence']
-                ).properties(title="Top 5 Anomalous Transactions (by Confidence)")
-                st.altair_chart(chart, use_container_width=True)
+            # Bar chart (altair)
+            import altair as alt
+            top_anomalies = df_sorted.head()
+            chart = alt.Chart(top_anomalies.reset_index()).mark_bar().encode(
+                x='Confidence:Q',
+                y=alt.Y('index:N', sort='-x'),
+                color='Prediction:N',
+                tooltip=['Result', 'Confidence']
+            ).properties(title="Top 5 Anomalous Transactions (by Confidence)")
+            st.altair_chart(chart, use_container_width=True)
 
-                # 📥 Download Results
-                csv = df_results.to_csv(index=False)
-                st.download_button(
-                    label="📥 Download Full Result CSV",
-                    data=csv,
-                    file_name="anomaly_detection_results.csv",
-                    mime="text/csv",
-                )
+            # Download full result
+            st.download_button(
+                label="📥 Download Full Result CSV",
+                data=df_results.to_csv(index=False),
+                file_name="anomaly_detection_results.csv",
+                mime="text/csv",
+            )
 
-                # ✅ Detailed Feedback
-                num_fraud = df_results["Prediction"].sum()
-                st.success(f"🎯 Anomaly Detection complete! {num_fraud} potential fraud(s) detected out of {len(df_results)} transactions.")
+            # Summary
+            st.success(f"🎯 Anomaly Detection complete! {df_results['Prediction'].sum()} fraud(s) found out of {len(df_results)} transactions.")
 
-            except Exception as e:
-                st.error(f"❌ Error: {e}")
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
 
+    # 🔽 Show last uploaded file (placed at the bottom like tab 2/3)
+    if st.button("📁 Show Last Uploaded CSV (Anomaly)") and os.path.exists(LAST_FILE_PATH):
+        try:
+            st.markdown("### 🔁 Last Uploaded CSV Preview (Anomaly)")
+            df_last = pd.read_csv(LAST_FILE_PATH)
+            st.dataframe(df_last.head())
+        except Exception as e:
+            st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # ------------------ TAB 5: Model Details ---------------------- 
  
