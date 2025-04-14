@@ -334,18 +334,27 @@ with tab3:
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
-# ---------------------- Tab 4: Anomaly Detection ---------------------
+import os
+import pandas as pd
+import altair as alt
+
+# Create temp directory and last file path
+TEMP_DIR = ".temp"
+os.makedirs(TEMP_DIR, exist_ok=True)
+LAST_FILE_PATH = os.path.join(TEMP_DIR, "last_uploaded_anomaly.csv")
+
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
 
-    # ✅ Show Last Uploaded CSV Button
+    # Option to load and show last uploaded file
     if os.path.exists(LAST_FILE_PATH):
         if st.button("📂 Show Last Uploaded File"):
             last_df = pd.read_csv(LAST_FILE_PATH)
             st.markdown("#### 🗂 Last Anomaly Detection Result")
             st.dataframe(last_df)
-            st.stop()
+            st.stop()  # Stop execution if user only wants to view last result
 
+    # Upload new CSV file
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
     if uploaded_file is not None:
@@ -373,7 +382,7 @@ with tab4:
                 df_results["Confidence"] = prediction_probs * 100
                 df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-                # Save to temp file
+                # 💾 Save result permanently
                 df_results.to_csv(LAST_FILE_PATH, index=False)
 
                 # 📊 Top Anomalies Table
@@ -382,7 +391,6 @@ with tab4:
                 st.dataframe(df_sorted.head())
 
                 # 📈 Bar Chart Visualization
-                import altair as alt
                 top_anomalies = df_sorted.head()
                 chart = alt.Chart(top_anomalies.reset_index()).mark_bar().encode(
                     x='Confidence:Q',
@@ -407,7 +415,6 @@ with tab4:
 
             except Exception as e:
                 st.error(f"❌ Error: {e}")
-
 
 
 # ------------------ TAB 5: Model Details ---------------------- 
