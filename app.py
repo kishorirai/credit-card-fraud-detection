@@ -313,7 +313,8 @@ with tab3:
             st.error(f"❌ Error: {e}")
 
     # Show last uploaded file (from session state)
-    if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
+    if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_tab3") and "last_uploaded" in st.session_state:
+
         try:
             last_uploaded_file = st.session_state["last_uploaded"]
             st.markdown("### 🔁 Last Uploaded CSV Preview")
