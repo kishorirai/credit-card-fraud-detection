@@ -249,52 +249,86 @@ with tab2:
 
 
 # --------------------- TAB 3: Feature Visualization ---------------------
+import os
+import shutil
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import streamlit as st
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+
+# Create 'uploads' directory if it doesn't exist
+upload_folder = "uploads"
+if not os.path.exists(upload_folder):
+    os.makedirs(upload_folder)
 
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
 
+    # Save uploaded file to disk permanently
     if uploaded_viz is not None:
-        try:
-            df_viz = pd.read_csv(uploaded_viz)
+        file_path = os.path.join(upload_folder, uploaded_viz.name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_viz.getbuffer())
 
-            required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-            missing_cols = [col for col in required_cols if col not in df_viz.columns]
-            if missing_cols:
-                st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
-                st.stop()
+        # Store the file path in session state
+        st.session_state.last_uploaded_viz = file_path
+        st.success(f"✅ File saved permanently as '{uploaded_viz.name}'!")
 
-            st.success("✅ File loaded successfully!")
+    # Show 'Load Last Uploaded File' button
+    if "last_uploaded_viz" in st.session_state:
+        if st.button("📂 Load Last Uploaded File"):
+            file_path = st.session_state.last_uploaded_viz
+            st.info(f"✅ Loaded previously uploaded file: {os.path.basename(file_path)}")
 
-            st.subheader("📉 2D PCA of the Transactions")
-            pca = PCA(n_components=2)
-            pca_result = pca.fit_transform(df_viz[required_cols])
+            try:
+                df_viz = pd.read_csv(file_path)
 
-            fig, ax = plt.subplots()
-            if "Class" in df_viz.columns:
-                scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
-                legend = ax.legend(*scatter.legend_elements(), title="Class")
-                ax.add_artist(legend)
-            else:
-                ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
-                ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
+                required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+                missing_cols = [col for col in required_cols if col not in df_viz.columns]
+                if missing_cols:
+                    st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+                    st.stop()
 
-            ax.set_title("PCA - 2D Projection")
-            ax.set_xlabel("Principal Component 1")
-            ax.set_ylabel("Principal Component 2")
-            st.pyplot(fig)
+                st.success("✅ File loaded successfully!")
 
-            # Feature correlation heatmap
-            st.subheader("📊 Correlation Heatmap")
-            fig2, ax2 = plt.subplots(figsize=(10, 8))
-            corr = df_viz.corr()
-            sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
-            ax2.set_title("Correlation Heatmap of Features")
-            st.pyplot(fig2)
+                # PCA Visualization
+                st.subheader("📉 2D PCA of the Transactions")
+                scale_features = st.checkbox("Standardize features before PCA", value=True)
+                if scale_features:
+                    scaled_data = StandardScaler().fit_transform(df_viz[required_cols])
+                else:
+                    scaled_data = df_viz[required_cols].values
 
-        except Exception as e:
-            st.error(f"❌ Error: {e}")
-            
+                pca_result = PCA(n_components=2).fit_transform(scaled_data)
+
+                fig, ax = plt.subplots()
+                if "Class" in df_viz.columns:
+                    scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
+                    legend = ax.legend(*scatter.legend_elements(), title="Class")
+                    ax.add_artist(legend)
+                else:
+                    ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
+                    ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
+
+                ax.set_title("PCA - 2D Projection")
+                ax.set_xlabel("Principal Component 1")
+                ax.set_ylabel("Principal Component 2")
+                st.pyplot(fig)
+
+                # Correlation heatmap
+                st.subheader("📊 Correlation Heatmap")
+                fig2, ax2 = plt.subplots(figsize=(10, 8))
+                corr = df_viz.corr()
+                sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
+                ax2.set_title("Correlation Heatmap of Features")
+                st.pyplot(fig2)
+
+            except Exception as e:
+                st.error(f"❌ Error: {e}")
+
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
