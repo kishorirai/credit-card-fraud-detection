@@ -250,7 +250,6 @@ with tab2:
 
 # --------------------- TAB 3: Feature Visualization ---------------------
 import os
-import shutil
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -263,6 +262,7 @@ upload_folder = "uploads"
 if not os.path.exists(upload_folder):
     os.makedirs(upload_folder)
 
+# TAB 3: Feature Visualization
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -328,7 +328,6 @@ with tab3:
 
             except Exception as e:
                 st.error(f"❌ Error: {e}")
-
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
