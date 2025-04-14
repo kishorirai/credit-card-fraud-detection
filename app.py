@@ -180,6 +180,10 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Define the model loading code (this should be your trained model)
 # model = load_your_model()
 
+# Initialize session state to store last uploaded file
+if "last_uploaded" not in st.session_state:
+    st.session_state["last_uploaded"] = None
+
 with tab2:
     st.markdown("### 📂 Upload a CSV File")
     uploaded_file = st.file_uploader("Upload CSV with columns: Time, V1–V28, Amount", type=["csv"])
@@ -223,31 +227,34 @@ with tab2:
 
     # Button to show the last uploaded CSV
     if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
-        try:
-            # Read the last uploaded file
-            last_uploaded_file = st.session_state["last_uploaded"]
-            df = pd.read_csv(last_uploaded_file)
+        st.write("Button clicked! Showing last uploaded file.")  # Debugging line
+        if st.session_state["last_uploaded"] is not None:
+            try:
+                # Read the last uploaded file
+                last_uploaded_file = st.session_state["last_uploaded"]
+                df = pd.read_csv(last_uploaded_file)
 
-            # Drop 'Class' column if exists
-            if "Class" in df.columns:
-                df = df.drop(columns=["Class"])
+                # Drop 'Class' column if exists
+                if "Class" in df.columns:
+                    df = df.drop(columns=["Class"])
 
-            # Run model predictions
-            predictions = model.predict(df)
-            prediction_probs = model.predict_proba(df)[:, 1]
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+                # Run model predictions
+                predictions = model.predict(df)
+                prediction_probs = model.predict_proba(df)[:, 1]
+                df["Prediction"] = predictions
+                df["Confidence"] = prediction_probs * 100
+                df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-            # Display results
-            st.markdown("### 🔁 Last Uploaded CSV")
-            st.dataframe(df.head())
-            st.dataframe(df[["Prediction", "Confidence", "Result"]])
+                # Display results
+                st.markdown("### 🔁 Last Uploaded CSV")
+                st.dataframe(df.head())
+                st.dataframe(df[["Prediction", "Confidence", "Result"]])
 
-        except Exception as e:
-            st.error(f"⚠️ Failed to load last uploaded file: {e}")
+            except Exception as e:
+                st.error(f"⚠️ Failed to load last uploaded file: {e}")
+        else:
+            st.warning("⚠️ No file uploaded yet.")
 
-# --------------------- TAB 3: Feature Visualization -------------
 
 # --------------------- TAB 3: Feature Visualization ---------------------
 
