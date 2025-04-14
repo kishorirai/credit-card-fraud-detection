@@ -249,85 +249,78 @@ with tab2:
 
 
 # --------------------- TAB 3: Feature Visualization ---------------------
+# --------------------- TAB 3: Feature Visualization ---------------------
+
 import os
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import streamlit as st
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
+from datetime import datetime
 
-# Create 'uploads' directory if it doesn't exist
-upload_folder = "uploads"
-if not os.path.exists(upload_folder):
-    os.makedirs(upload_folder)
+UPLOAD_DIR = "uploaded_files"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# TAB 3: Feature Visualization
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
 
-    # Save uploaded file to disk permanently
     if uploaded_viz is not None:
-        file_path = os.path.join(upload_folder, uploaded_viz.name)
-        with open(file_path, "wb") as f:
-            f.write(uploaded_viz.getbuffer())
+        try:
+            df_viz = pd.read_csv(uploaded_viz)
 
-        # Store the file path in session state
-        st.session_state.last_uploaded_viz = file_path
-        st.success(f"✅ File saved permanently as '{uploaded_viz.name}'!")
+            required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
+            missing_cols = [col for col in required_cols if col not in df_viz.columns]
+            if missing_cols:
+                st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
+                st.stop()
 
-    # Show 'Load Last Uploaded File' button
-    if "last_uploaded_viz" in st.session_state:
-        if st.button("📂 Load Last Uploaded File"):
-            file_path = st.session_state.last_uploaded_viz
-            st.info(f"✅ Loaded previously uploaded file: {os.path.basename(file_path)}")
+            st.success("✅ File loaded successfully!")
 
-            try:
-                df_viz = pd.read_csv(file_path)
+            # Save uploaded file permanently
+            filename = f"viz_uploaded_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            file_path = os.path.join(UPLOAD_DIR, filename)
+            df_viz.to_csv(file_path, index=False)
+            st.session_state["last_uploaded"] = file_path
 
-                required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
-                missing_cols = [col for col in required_cols if col not in df_viz.columns]
-                if missing_cols:
-                    st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
-                    st.stop()
+            st.subheader("📉 2D PCA of the Transactions")
+            pca = PCA(n_components=2)
+            pca_result = pca.fit_transform(df_viz[required_cols])
 
-                st.success("✅ File loaded successfully!")
+            fig, ax = plt.subplots()
+            if "Class" in df_viz.columns:
+                scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
+                legend = ax.legend(*scatter.legend_elements(), title="Class")
+                ax.add_artist(legend)
+            else:
+                ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
+                ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
 
-                # PCA Visualization
-                st.subheader("📉 2D PCA of the Transactions")
-                scale_features = st.checkbox("Standardize features before PCA", value=True)
-                if scale_features:
-                    scaled_data = StandardScaler().fit_transform(df_viz[required_cols])
-                else:
-                    scaled_data = df_viz[required_cols].values
+            ax.set_title("PCA - 2D Projection")
+            ax.set_xlabel("Principal Component 1")
+            ax.set_ylabel("Principal Component 2")
+            st.pyplot(fig)
 
-                pca_result = PCA(n_components=2).fit_transform(scaled_data)
+            # Feature correlation heatmap
+            st.subheader("📊 Correlation Heatmap")
+            fig2, ax2 = plt.subplots(figsize=(10, 8))
+            corr = df_viz.corr()
+            sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
+            ax2.set_title("Correlation Heatmap of Features")
+            st.pyplot(fig2)
 
-                fig, ax = plt.subplots()
-                if "Class" in df_viz.columns:
-                    scatter = ax.scatter(pca_result[:, 0], pca_result[:, 1], c=df_viz["Class"], cmap="coolwarm", alpha=0.7)
-                    legend = ax.legend(*scatter.legend_elements(), title="Class")
-                    ax.add_artist(legend)
-                else:
-                    ax.scatter(pca_result[:, 0], pca_result[:, 1], color="blue", alpha=0.5)
-                    ax.text(0.5, 0.9, "Note: 'Class' column missing — no fraud coloring", transform=ax.transAxes, ha='center', fontsize=9, color="gray")
+            # Download button for user
+            csv_data = df_viz.to_csv(index=False).encode("utf-8")
+            st.download_button("📥 Download Uploaded CSV", csv_data, "uploaded_visualization.csv", "text/csv")
 
-                ax.set_title("PCA - 2D Projection")
-                ax.set_xlabel("Principal Component 1")
-                ax.set_ylabel("Principal Component 2")
-                st.pyplot(fig)
+        except Exception as e:
+            st.error(f"❌ Error: {e}")
 
-                # Correlation heatmap
-                st.subheader("📊 Correlation Heatmap")
-                fig2, ax2 = plt.subplots(figsize=(10, 8))
-                corr = df_viz.corr()
-                sns.heatmap(corr, cmap="coolwarm", annot=False, ax=ax2)
-                ax2.set_title("Correlation Heatmap of Features")
-                st.pyplot(fig2)
-
-            except Exception as e:
-                st.error(f"❌ Error: {e}")
+    # Show last uploaded file (from session state)
+    if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
+        try:
+            last_uploaded_file = st.session_state["last_uploaded"]
+            st.markdown("### 🔁 Last Uploaded CSV Preview")
+            df_last = pd.read_csv(last_uploaded_file)
+            st.dataframe(df_last.head())
+        except Exception as e:
+            st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
