@@ -333,21 +333,21 @@ with tab3:
 
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
-import os
-import pandas as pd
-from datetime import datetime
-
-# Directory to save uploaded files
-UPLOAD_DIR = "uploaded_files"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
-# Path for storing the last uploaded anomaly file
-LAST_FILE_PATH = os.path.join(UPLOAD_DIR, "last_uploaded_anomaly.csv")
-
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
 
-    # File upload for anomaly detection
+    # Option to Load Last File
+    if os.path.exists(LAST_FILE_PATH):
+        # Button to show last uploaded file
+        if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_csv_tab4"):
+            try:
+                last_uploaded_file = pd.read_csv(LAST_FILE_PATH)
+                st.markdown("### 🔁 Last Uploaded CSV Preview")
+                st.dataframe(last_uploaded_file.head())
+            except Exception as e:
+                st.error(f"⚠️ Failed to load last uploaded file: {e}")
+    
+    # Rest of the tab 4 logic (Anomaly Detection CSV Upload, Predictions, etc.)
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
     if uploaded_file is not None:
@@ -375,7 +375,7 @@ with tab4:
                 df_results["Confidence"] = prediction_probs * 100
                 df_results["Result"] = df_results["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-                # Save the result to temp file
+                # Save to temp file
                 df_results.to_csv(LAST_FILE_PATH, index=False)
 
                 # 📊 Top Anomalies Table
@@ -409,15 +409,6 @@ with tab4:
 
             except Exception as e:
                 st.error(f"❌ Error: {e}")
-                
-# Show Last Uploaded File Button (with a unique key)
-if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_csv_tab4") and os.path.exists(LAST_FILE_PATH):
-    try:
-        last_uploaded_file = pd.read_csv(LAST_FILE_PATH)
-        st.markdown("### 🔁 Last Uploaded CSV Preview")
-        st.dataframe(last_uploaded_file.head())
-    except Exception as e:
-        st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 
 # ------------------ TAB 5: Model Details ---------------------- 
