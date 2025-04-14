@@ -328,29 +328,12 @@ with tab3:
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
-import os
+uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
-# Create a temporary directory if not exists
-TEMP_DIR = ".temp"
-os.makedirs(TEMP_DIR, exist_ok=True)
-LAST_FILE_PATH = os.path.join(TEMP_DIR, "last_uploaded_anomaly.csv")
+if uploaded_file is not None:
+    run_detection = st.button("🔄 Run Anomaly Detection")
 
-
-with tab4:
-    st.markdown("### 🔍 Anomaly Detection Visualization")
-
-    # Option to Load Last File
-    if os.path.exists(LAST_FILE_PATH):
-        if st.button("📂 Show Last Uploaded File"):
-            last_df = pd.read_csv(LAST_FILE_PATH)
-            st.markdown("#### 🗂 Last Anomaly Detection Result")
-            st.dataframe(last_df)
-            st.stop()  # Skip file upload if user wants to just view the last one
-
-    # Upload New CSV
-    uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
-
-    if uploaded_file is not None:
+    if run_detection:
         try:
             df_raw = pd.read_csv(uploaded_file)
 
