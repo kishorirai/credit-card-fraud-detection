@@ -244,13 +244,6 @@ with tab2:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # --------------------- TAB 3: Feature Visualization ---------------------
-
-import os
-from datetime import datetime
-
-UPLOAD_DIR = "uploaded_files"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-
 with tab3:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -299,16 +292,31 @@ with tab3:
             ax2.set_title("Correlation Heatmap of Features")
             st.pyplot(fig2)
 
-            # Download button for user
+            # Feature Importance (Optional)
+            if 'Class' in df_viz.columns:
+                st.subheader("📊 Feature Importance (Random Forest)")
+                from sklearn.ensemble import RandomForestClassifier
+                model = RandomForestClassifier(n_estimators=100)
+                X = df_viz.drop(columns=["Class"])
+                y = df_viz["Class"]
+                model.fit(X, y)
+
+                feature_importances = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False)
+                fig3, ax3 = plt.subplots(figsize=(10, 6))
+                feature_importances.plot(kind="bar", ax=ax3)
+                ax3.set_title("Feature Importance")
+                ax3.set_ylabel("Importance")
+                st.pyplot(fig3)
+
+            # Add Download Button for Results
             csv_data = df_viz.to_csv(index=False).encode("utf-8")
-            st.download_button("📥 Download Uploaded CSV", csv_data, "uploaded_visualization.csv", "text/csv")
+            st.download_button("📥 Download Processed Result CSV", csv_data, "processed_visualization_results.csv", "text/csv")
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
     # Show last uploaded file (from session state)
     if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_tab3") and "last_uploaded" in st.session_state:
-
         try:
             last_uploaded_file = st.session_state["last_uploaded"]
             st.markdown("### 🔁 Last Uploaded CSV Preview")
@@ -316,6 +324,7 @@ with tab3:
             st.dataframe(df_last.head())
         except Exception as e:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
+
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
