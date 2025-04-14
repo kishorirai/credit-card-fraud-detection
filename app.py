@@ -336,13 +336,15 @@ with tab3:
 
 # ---------------------- Tab 4: Anomaly Detection ---------------------
 with tab4:
-    # Option to Load Last File
-if os.path.exists(LAST_FILE_PATH):
-    if st.button("📂 Show Last Uploaded File"):
-        last_df = pd.read_csv(LAST_FILE_PATH)
-        st.markdown("#### 🗂 Last Anomaly Detection Result")
-        st.dataframe(last_df)
-        st.stop()  # Skip file upload if user wants to just view the last one
+    st.markdown("### 🔍 Anomaly Detection Visualization")
+
+    # ✅ Show Last Uploaded CSV Button
+    if os.path.exists(LAST_FILE_PATH):
+        if st.button("📂 Show Last Uploaded File"):
+            last_df = pd.read_csv(LAST_FILE_PATH)
+            st.markdown("#### 🗂 Last Anomaly Detection Result")
+            st.dataframe(last_df)
+            st.stop()
 
     uploaded_file = st.file_uploader("Upload CSV for Anomaly Detection", type=["csv"], key="anomaly")
 
