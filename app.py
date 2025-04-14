@@ -333,6 +333,14 @@ with tab3:
 
 
 # ----------------- TAB 4: Anomaly Detection ----------------- 
+import os
+
+UPLOAD_DIR = "uploaded_files"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# Define this immediately after UPLOAD_DIR
+LAST_FILE_PATH = os.path.join(UPLOAD_DIR, "last_uploaded_anomaly.csv")
+
 with tab4:
     st.markdown("### 🔍 Anomaly Detection Visualization")
 
