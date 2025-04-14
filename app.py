@@ -168,72 +168,78 @@ with tab1:
 
 
 # ---------------------- Tab 2: CSV Upload ---------------------
+# ---------------------- Tab 2: CSV Upload ---------------------
 import os
 import pandas as pd
 from datetime import datetime
 
-# Directory to save uploaded files
+# Directory to save uploaded files (global is fine)
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Display the Tab
+# Tab 2 UI and logic
 with tab2:
     st.markdown("### 📂 CSV Upload for Fraud Detection")
 
-    # File upload
+    # Upload file
     uploaded_file = st.file_uploader("Upload CSV for Fraud Detection", type=["csv"], key="fraud_csv")
 
     if uploaded_file is not None:
         try:
             df = pd.read_csv(uploaded_file)
-            
+
             # Check for required columns
             required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
             missing_cols = [col for col in required_cols if col not in df.columns]
             if missing_cols:
                 st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
                 st.stop()
-            
-            # Run fraud detection (using model)
-            predictions = model.predict(df[required_cols])  # Use your model here
+
+            # Run model predictions
+            predictions = model.predict(df[required_cols])
             prediction_probs = model.predict_proba(df[required_cols])[:, 1]
 
-            # Add prediction results to the dataframe
+            # Add results to dataframe
             df['Prediction'] = predictions
             df['Confidence'] = prediction_probs * 100
             df['Result'] = df['Prediction'].map({0: '✅ Legit', 1: '🚨 Fraud'})
-            
-            # Save processed file
+
+            # Save processed result
             filename = f"fraud_detection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
             file_path = os.path.join(UPLOAD_DIR, filename)
             df.to_csv(file_path, index=False)
             st.session_state["last_uploaded"] = file_path
-            
-            # Show processed data
+
+            # Show result preview
             st.success("✅ Fraud Detection Complete!")
             st.dataframe(df[['Time', 'Amount', 'Prediction', 'Confidence', 'Result']].head())
-            
-            # Provide option to download the results
+
+            # Download button
             csv_data = df.to_csv(index=False).encode('utf-8')
             st.download_button("📥 Download Detection Results", csv_data, filename, "text/csv")
-            
-            # Visualization: Pie chart of fraud vs legit
+
+            # Visualization - Pie chart
             st.subheader("📊 Fraud vs Legit Transactions")
             fraud_count = df['Prediction'].sum()
             legit_count = len(df) - fraud_count
             st.write(f"Fraud: {fraud_count} | Legit: {legit_count}")
             st.write(f"Fraud Rate: {fraud_count / len(df) * 100:.2f}%")
 
-            # Pie chart
             fig, ax = plt.subplots()
-            ax.pie([fraud_count, legit_count], labels=['Fraud', 'Legit'], autopct='%1.1f%%', startangle=90, colors=['red', 'green'])
+            ax.pie(
+                [fraud_count, legit_count],
+                labels=['Fraud', 'Legit'],
+                autopct='%1.1f%%',
+                startangle=90,
+                colors=['red', 'green']
+            )
             ax.axis('equal')
             st.pyplot(fig)
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # Show last uploaded file (from session state)
+    # Show last uploaded file (session state)
     if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
         try:
             last_uploaded_file = st.session_state["last_uploaded"]
