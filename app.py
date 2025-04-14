@@ -249,11 +249,6 @@ with tab2:
     except Exception as e:
         st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
-
-        
-
-
-
 # --------------------- TAB 3: Feature Visualization ---------------------
 # --------------------- TAB 3: Feature Visualization ---------------------
 
