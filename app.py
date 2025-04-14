@@ -170,58 +170,71 @@ with tab1:
 # ---------------------- Tab 2: CSV Upload ---------------------
 import os
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-import streamlit as st
 from datetime import datetime
 
+# Directory to save uploaded files
 UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# Display the Tab
 with tab2:
-    st.markdown("### 📂 Upload Your Transaction Data (CSV)")
-    uploaded_file = st.file_uploader("Upload CSV file", type=["csv"], key="csv_upload")
+    st.markdown("### 📂 CSV Upload for Fraud Detection")
+
+    # File upload
+    uploaded_file = st.file_uploader("Upload CSV for Fraud Detection", type=["csv"], key="fraud_csv")
 
     if uploaded_file is not None:
         try:
-            # Read the CSV file
             df = pd.read_csv(uploaded_file)
-
+            
+            # Check for required columns
             required_cols = ['Time'] + [f'V{i}' for i in range(1, 29)] + ['Amount']
             missing_cols = [col for col in required_cols if col not in df.columns]
             if missing_cols:
                 st.error(f"❌ Missing required columns: {', '.join(missing_cols)}")
                 st.stop()
+            
+            # Run fraud detection (using model)
+            predictions = model.predict(df[required_cols])  # Use your model here
+            prediction_probs = model.predict_proba(df[required_cols])[:, 1]
 
-            st.success("✅ File loaded successfully!")
-
-            # Save uploaded file permanently
-            filename = f"uploaded_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            # Add prediction results to the dataframe
+            df['Prediction'] = predictions
+            df['Confidence'] = prediction_probs * 100
+            df['Result'] = df['Prediction'].map({0: '✅ Legit', 1: '🚨 Fraud'})
+            
+            # Save processed file
+            filename = f"fraud_detection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
             file_path = os.path.join(UPLOAD_DIR, filename)
             df.to_csv(file_path, index=False)
             st.session_state["last_uploaded"] = file_path
+            
+            # Show processed data
+            st.success("✅ Fraud Detection Complete!")
+            st.dataframe(df[['Time', 'Amount', 'Prediction', 'Confidence', 'Result']].head())
+            
+            # Provide option to download the results
+            csv_data = df.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Download Detection Results", csv_data, filename, "text/csv")
+            
+            # Visualization: Pie chart of fraud vs legit
+            st.subheader("📊 Fraud vs Legit Transactions")
+            fraud_count = df['Prediction'].sum()
+            legit_count = len(df) - fraud_count
+            st.write(f"Fraud: {fraud_count} | Legit: {legit_count}")
+            st.write(f"Fraud Rate: {fraud_count / len(df) * 100:.2f}%")
 
-            # Show a preview of the dataset
-            st.subheader("📋 Dataset Preview")
-            st.dataframe(df.head())
-
-            # Correlation Heatmap
-            st.subheader("📊 Feature Correlation Heatmap")
-            fig, ax = plt.subplots(figsize=(12, 10))
-            corr = df.corr()  # Compute correlation matrix
-            sns.heatmap(corr, cmap="coolwarm", annot=True, ax=ax, fmt=".2f", linewidths=0.5)
-            ax.set_title("Correlation Heatmap of Features")
+            # Pie chart
+            fig, ax = plt.subplots()
+            ax.pie([fraud_count, legit_count], labels=['Fraud', 'Legit'], autopct='%1.1f%%', startangle=90, colors=['red', 'green'])
+            ax.axis('equal')
             st.pyplot(fig)
-
-            # Download button for user to get the uploaded CSV
-            csv_data = df.to_csv(index=False).encode("utf-8")
-            st.download_button("📥 Download Uploaded CSV", csv_data, "uploaded_data.csv", "text/csv")
 
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # Option to show last uploaded file (from session state)
-    if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_tab2") and "last_uploaded" in st.session_state:
+    # Show last uploaded file (from session state)
+    if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
         try:
             last_uploaded_file = st.session_state["last_uploaded"]
             st.markdown("### 🔁 Last Uploaded CSV Preview")
