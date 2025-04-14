@@ -409,15 +409,16 @@ with tab4:
 
             except Exception as e:
                 st.error(f"❌ Error: {e}")
+                
+# Show Last Uploaded File Button (with a unique key)
+if st.button("📁 Show Last Uploaded CSV", key="show_last_uploaded_csv_tab4") and os.path.exists(LAST_FILE_PATH):
+    try:
+        last_uploaded_file = pd.read_csv(LAST_FILE_PATH)
+        st.markdown("### 🔁 Last Uploaded CSV Preview")
+        st.dataframe(last_uploaded_file.head())
+    except Exception as e:
+        st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
-    # Show Last Uploaded File Button (below file uploader)
-    if st.button("📁 Show Last Uploaded CSV") and os.path.exists(LAST_FILE_PATH):
-        try:
-            last_uploaded_file = pd.read_csv(LAST_FILE_PATH)
-            st.markdown("### 🔁 Last Uploaded CSV Preview")
-            st.dataframe(last_uploaded_file.head())
-        except Exception as e:
-            st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # ------------------ TAB 5: Model Details ---------------------- 
  
