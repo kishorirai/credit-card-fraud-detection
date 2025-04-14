@@ -403,10 +403,10 @@ with tab4:
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # 🔽 Show last uploaded file (placed at the bottom like tab 2/3)
-    if st.button("📁 Show Last Uploaded CSV (Anomaly)") and os.path.exists(LAST_FILE_PATH):
+    # 🔽 Show last uploaded file 
+    if st.button("📁 Show Last Uploaded CSV ") and os.path.exists(LAST_FILE_PATH):
         try:
-            st.markdown("### 🔁 Last Uploaded CSV Preview (Anomaly)")
+            st.markdown("### 🔁 Last Uploaded CSV Preview ")
             df_last = pd.read_csv(LAST_FILE_PATH)
             st.dataframe(df_last.head())
         except Exception as e:
