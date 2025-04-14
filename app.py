@@ -225,24 +225,30 @@ with tab2:
 
     # Button to show the last uploaded CSV
     if st.button("📁 Show Last Uploaded CSV") and "last_uploaded" in st.session_state:
-        try:
-            # Read the last uploaded file from session state
-            last_uploaded_file = st.session_state["last_uploaded"]
-            st.markdown("### 🔁 Last Uploaded CSV")
-            df = pd.read_csv(last_uploaded_file)
+    try:
+        # Read the last uploaded file
+        last_uploaded_file = st.session_state["last_uploaded"]
+        df = pd.read_csv(last_uploaded_file)
 
-            # Display predictions for the last uploaded file
-            predictions = model.predict(df)
-            prediction_probs = model.predict_proba(df)[:, 1]
-            df["Prediction"] = predictions
-            df["Confidence"] = prediction_probs * 100
-            df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
+        # Drop 'Class' column if exists
+        if "Class" in df.columns:
+            df = df.drop(columns=["Class"])
 
-            st.dataframe(df.head())
-            st.dataframe(df[["Prediction", "Confidence", "Result"]])
+        # Run model predictions
+        predictions = model.predict(df)
+        prediction_probs = model.predict_proba(df)[:, 1]
+        df["Prediction"] = predictions
+        df["Confidence"] = prediction_probs * 100
+        df["Result"] = df["Prediction"].map({0: "✅ Legit", 1: "🚨 Fraud"})
 
-        except Exception as e:
-            st.error(f"⚠️ Failed to load last uploaded file: {e}")
+        # Display results
+        st.markdown("### 🔁 Last Uploaded CSV")
+        st.dataframe(df.head())
+        st.dataframe(df[["Prediction", "Confidence", "Result"]])
+
+    except Exception as e:
+        st.error(f"⚠️ Failed to load last uploaded file: {e}")
+
 
         
 
