@@ -43,7 +43,7 @@ https://credit-card-fraud-detection-p9onhhkshnncs4xnykspa6.streamlit.app/
 
 ## **Dataset**
 
-The dataset used for training the model is available in the repository under `data/credit_card_fraud_data.csv`. It contains features related to transactions, such as transaction amount, time, and anonymized features. You can use this dataset to test the model.
+The dataset used for training the model is available in the repository in zip file, credit_card_fraud_data.csv`. It contain features related to transactions, such as transaction amount, time, and anonymized features. You can use this dataset to test the model.
 
 ## **Model**
 
