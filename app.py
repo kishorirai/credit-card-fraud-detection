@@ -77,7 +77,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---- TABS ----
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📝 Manual Input", "📁 CSV Upload", ])
+tab1, tab2 = st.tabs(["📝 Manual Input", "📁 CSV Upload", ])
 
 
 
