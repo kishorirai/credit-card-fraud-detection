@@ -479,4 +479,4 @@ with tab5:
 
 
 # ---- FOOTER ----
-st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
+st.markdown("<div class='footer'>Made by Mahika Mehta | MITS Gwalior</div>", unsafe_allow_html=True)
