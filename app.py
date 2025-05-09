@@ -110,7 +110,7 @@ UPLOAD_DIR = "uploaded_files"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Tab 2 UI and logic
-with tab2:
+with tab1:
     st.markdown("### 📂 CSV Upload for Fraud Detection")
 
     # Upload file
@@ -182,7 +182,7 @@ with tab2:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # --------------------- TAB 3: Feature Visualization ---------------------
-with tab3:
+with tab2:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
 
@@ -267,7 +267,7 @@ with tab3:
 # ----------------- TAB 4: Anomaly Detection ----------------- 
 
 # ---------------- Tab 4: Anomaly Detection ----------------
-with tab4:
+with tab3:
     st.markdown("### 🧠 Anomaly Detection")
 
     # File uploader
@@ -345,10 +345,7 @@ with tab4:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 # ------------------ TAB 5: Model Details ---------------------- 
- 
-
-
-with tab5:
+ with tab4:
 
     # Model Overview
     st.markdown("### ℹ️ Model Details")
