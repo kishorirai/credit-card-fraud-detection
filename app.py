@@ -100,7 +100,7 @@ st.markdown(f"""
 tab1, tab2, tab3, tab4 = st.tabs([ "📁 CSV Upload", "📊 Feature Visualization", "🔍 Anomaly Detection", "ℹ️ Model Details"])
 
 
-# ---------------------- Tab 2: CSV Upload ---------------------
+# ---------------------- Tab 1: CSV Upload ---------------------
 import os
 import pandas as pd
 from datetime import datetime
@@ -181,7 +181,7 @@ with tab1:
         except Exception as e:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
-# --------------------- TAB 3: Feature Visualization ---------------------
+# --------------------- TAB 2: Feature Visualization ---------------------
 with tab2:
     st.markdown("### 📊 Visualize Transaction Features")
     uploaded_viz = st.file_uploader("Upload CSV for Visualization", type=["csv"], key="viz")
@@ -264,9 +264,7 @@ with tab2:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
 
-# ----------------- TAB 4: Anomaly Detection ----------------- 
-
-# ---------------- Tab 4: Anomaly Detection ----------------
+# ---------------- Tab 3: Anomaly Detection ----------------
 with tab3:
     st.markdown("### 🧠 Anomaly Detection")
 
@@ -344,9 +342,10 @@ with tab3:
         except Exception as e:
             st.error(f"⚠️ Failed to load last uploaded file: {e}")
 
-# ------------------ TAB 5: Model Details ---------------------- 
- with tab4:
+# ------------------ TAB 4: Model Details -----------
 
+# ------------------ TAB 4: Model Details ---------------------- 
+with tab4:
     # Model Overview
     st.markdown("### ℹ️ Model Details")
     st.markdown("""
@@ -404,8 +403,6 @@ with tab3:
     - **FP**: Non-fraud predicted as fraud  
     - **FN**: Fraud predicted as non-fraud  
     """)
-
-
 
 # ---- FOOTER ----
 st.markdown("<div class='footer'>Made by Kishori Kumari | MITS Gwalior</div>", unsafe_allow_html=True)
